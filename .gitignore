@@ -1,21 +1,5 @@
-*.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
 .env
-debug.keystore
+.DS_Store
 
 # Python virtual environment and caches
 backend/.venv/
@@ -23,7 +7,6 @@ backend/.venv/
 __pycache__/
 *.pyc
 backend/diaspora.db
-backend/chroma_db/
 backend/cookies.json
 .vercel/
 

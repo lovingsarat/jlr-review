@@ -2,5 +2,5 @@
   "name": "Midlands Sentiment",
   "description": "Midlands Indian Diaspora Community Event Feedback Consolidator & RAG chatbot for real-time sentiment analysis and trend reporting (2026).",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": ["MAJOR_CAPABILITY_CLIENT_SIDE_GEMINI_API"]
 }
