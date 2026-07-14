@@ -196,9 +196,7 @@ function App() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "BOT",
-      text: ENV_GEMINI_KEY
-        ? "Hello! I am your Midlands Sentiment assistant. Ask me anything about the Indian diaspora community feedback loaded from this feed."
-        : "Hello! I am your Midlands Sentiment assistant. Enter your Gemini API key below to ask questions about the Indian diaspora community feedback loaded from this static feed.",
+      text: "Hello! I am your RAG-enabled Diaspora Assistant. I have indexed all 2026 social media feedback from Twitter, Facebook, and Quora regarding Indian diaspora community events and upcoming activities in the Midlands. Ask me anything, or run sentiment / trend queries!",
       timestamp: Date.now(),
     },
   ]);
