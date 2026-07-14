@@ -309,7 +309,7 @@ function App() {
     setFeedItems(filtered);
   };
 
-  // Fetch stats (Hybrid)
+  // Fetch stats (Hybrid: backend API → static data.json → hardcoded fallback)
   const fetchStats = async () => {
     try {
       const res = await fetch(`${API_BASE}/stats`);
@@ -317,23 +317,56 @@ function App() {
         const data = await res.json();
         setStats(data);
         setIsBackendAvailable(true);
-      } else {
-        throw new Error();
+        return;
       }
-    } catch (err) {
-      // Backend is unavailable
-      setIsBackendAvailable(false);
-      calculateLocalStats();
-    }
+    } catch (_) {}
+    // Backend not available — try static data.json (GitHub Pages)
+    setIsBackendAvailable(false);
+    try {
+      const res = await fetch(`/diaspora-hub/data.json`);
+      if (res.ok) {
+        const data = await res.json();
+        setStats({
+          totalFeedbackCount: data.totalFeedbackCount,
+          sentimentPercentages: data.sentimentPercentages,
+          platformCounts: data.platformCounts,
+          cityCounts: data.cityCounts,
+        });
+        setFeedItems(data.items || []);
+        return;
+      }
+    } catch (_) {}
+    // Last resort — hardcoded data
+    calculateLocalStats();
   };
 
-  // Fetch feedback (Hybrid)
+  // Fetch feedback items (Hybrid: backend API → static data.json → hardcoded fallback)
   const fetchFeedback = async () => {
     if (!isBackendAvailable) {
+      // Try static data.json first
+      try {
+        const res = await fetch(`/diaspora-hub/data.json`);
+        if (res.ok) {
+          const data = await res.json();
+          let items = data.items || [];
+          if (selectedPlatform) items = items.filter(i => i.platform === selectedPlatform);
+          if (selectedSentiment) items = items.filter(i => i.sentiment === selectedSentiment);
+          if (selectedCity) items = items.filter(i => i.city === selectedCity);
+          if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            items = items.filter(i =>
+              i.text.toLowerCase().includes(q) ||
+              i.event.toLowerCase().includes(q) ||
+              i.author.toLowerCase().includes(q)
+            );
+          }
+          setFeedItems(items);
+          return;
+        }
+      } catch (_) {}
       filterLocalFeedback();
       return;
     }
-
     try {
       let url = `${API_BASE}/feedback?`;
       const params = [];
@@ -341,7 +374,6 @@ function App() {
       if (selectedPlatform) params.push(`platform=${encodeURIComponent(selectedPlatform)}`);
       if (selectedSentiment) params.push(`sentiment=${encodeURIComponent(selectedSentiment)}`);
       if (selectedCity) params.push(`city=${encodeURIComponent(selectedCity)}`);
-      
       url += params.join("&");
       const res = await fetch(url);
       if (res.ok) {
