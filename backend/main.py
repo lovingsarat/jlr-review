@@ -1,6 +1,8 @@
 import os
+import asyncio
 from typing import List, Dict, Optional
-from fastapi import FastAPI, HTTPException, Query
+from datetime import datetime
+from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
@@ -23,6 +25,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Scraper State (in-memory) ---
+scraper_state = {
+    "is_running": False,
+    "last_run": None,          # ISO timestamp of last successful run
+    "last_added": 0,           # How many items were added in the last run
+    "status_message": "Idle",
+}
+
 class ChatMessage(BaseModel):
     sender: str  # "USER" or "BOT"
     text: str
@@ -31,6 +41,61 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     history: List[ChatMessage]
+
+# --- Background scraper task ---
+async def run_scraper_background():
+    scraper_state["is_running"] = True
+    scraper_state["status_message"] = "Scraping X (Twitter) for new UK diaspora content..."
+    try:
+        from scraper import run_scraper
+        # Count before
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM feedback_items")
+        count_before = c.fetchone()[0]
+        conn.close()
+
+        await run_scraper()
+
+        # Count after
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM feedback_items")
+        count_after = c.fetchone()[0]
+        conn.close()
+
+        added = count_after - count_before
+        scraper_state["last_added"] = added
+        scraper_state["last_run"] = datetime.utcnow().isoformat() + "Z"
+        scraper_state["status_message"] = f"Done. {added} new UK items added."
+    except Exception as e:
+        scraper_state["status_message"] = f"Error: {str(e)[:120]}"
+    finally:
+        scraper_state["is_running"] = False
+
+@app.post("/api/scrape")
+async def trigger_scrape(background_tasks: BackgroundTasks):
+    """Trigger the Twitter/X scraper in the background. Tracks duplicate tweet IDs automatically."""
+    if scraper_state["is_running"]:
+        return {
+            "status": "already_running",
+            "message": "Scraper is already running. Check /api/scrape/status for progress."
+        }
+    background_tasks.add_task(run_scraper_background)
+    return {
+        "status": "started",
+        "message": "UK diaspora scraper started. New tweets will be filtered for duplicates automatically."
+    }
+
+@app.get("/api/scrape/status")
+def get_scrape_status():
+    """Get the current status of the scraper and when it last ran."""
+    return {
+        "is_running": scraper_state["is_running"],
+        "last_run": scraper_state["last_run"],
+        "last_added": scraper_state["last_added"],
+        "status_message": scraper_state["status_message"],
+    }
 
 @app.get("/api/feedback")
 def get_feedback(

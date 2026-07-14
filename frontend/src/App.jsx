@@ -202,7 +202,56 @@ function App() {
     return localStorage.getItem("diaspora_gemini_api_key") || "";
   });
 
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeStatus, setScrapeStatus] = useState(null);
+  const [lastScraped, setLastScraped] = useState(null);
+
   const chatEndRef = useRef(null);
+
+  // Poll scrape status while running
+  const fetchScrapeStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/scrape/status`);
+      if (res.ok) {
+        const data = await res.json();
+        setIsScraping(data.is_running);
+        setScrapeStatus(data.status_message);
+        if (data.last_run) setLastScraped(data.last_run);
+        if (!data.is_running && data.last_run) {
+          // Refresh data after scrape completes
+          fetchStats();
+          fetchFeedback();
+        }
+      }
+    } catch (_) {}
+  };
+
+  const triggerScrape = async () => {
+    if (isScraping || !isBackendAvailable) return;
+    try {
+      const res = await fetch(`${API_BASE}/scrape`, { method: "POST" });
+      if (res.ok) {
+        setIsScraping(true);
+        setScrapeStatus("Starting UK diaspora scraper...");
+        // Poll every 4 seconds while running
+        const poll = setInterval(async () => {
+          const statusRes = await fetch(`${API_BASE}/scrape/status`);
+          if (statusRes.ok) {
+            const data = await statusRes.json();
+            setIsScraping(data.is_running);
+            setScrapeStatus(data.status_message);
+            if (data.last_run) setLastScraped(data.last_run);
+            if (!data.is_running) {
+              clearInterval(poll);
+              fetchStats();
+              fetchFeedback();
+            }
+          }
+        }, 4000);
+      }
+    } catch (_) {}
+  };
+
 
   // Fallback local calculations
   const calculateLocalStats = () => {
@@ -307,10 +356,12 @@ function App() {
     }
   };
 
-  // Initial stats trigger
+  // Initial stats + scrape status trigger
   useEffect(() => {
     fetchStats();
+    if (isBackendAvailable) fetchScrapeStatus();
   }, []);
+
 
   // Dependencies trigger
   useEffect(() => {
@@ -511,13 +562,51 @@ Instructions for your responses:
             <span>INDIAN DIASPORA ENGAGEMENT {isBackendAvailable ? "🟢 (LIVE BACKEND)" : "🟡 (SERVERLESS LOCAL)"}</span>
           </div>
         </div>
-        <button className="reset-button" onClick={handleClearFilters} title="Reset all filters">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-          </svg>
-          Reset Filters
-        </button>
+        <div className="header-actions">
+          {isBackendAvailable && (
+            <div className="scrape-control">
+              {lastScraped && (
+                <span className="last-scraped-label">
+                  Last fetched: {new Date(lastScraped).toLocaleTimeString()}
+                </span>
+              )}
+              <button
+                id="fetch-new-data-btn"
+                className={`fetch-data-button ${isScraping ? "scraping" : ""}`}
+                onClick={triggerScrape}
+                disabled={isScraping}
+                title={isScraping ? scrapeStatus : "Fetch latest UK diaspora posts from X (Twitter)"}
+              >
+                {isScraping ? (
+                  <>
+                    <span className="scrape-spinner"></span>
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="23 4 23 10 17 10" />
+                      <polyline points="1 20 1 14 7 14" />
+                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                    Fetch New Data
+                  </>
+                )}
+              </button>
+              {scrapeStatus && !isScraping && (
+                <span className="scrape-done-label">{scrapeStatus}</span>
+              )}
+            </div>
+          )}
+          <button className="reset-button" onClick={handleClearFilters} title="Reset all filters">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+            Reset Filters
+          </button>
+        </div>
       </header>
+
 
       {/* 2. Navigation Tabs */}
       <nav className="tab-navigation">
