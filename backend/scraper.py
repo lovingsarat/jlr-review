@@ -155,6 +155,87 @@ def analyze_tweet_with_gemini(text: str) -> dict:
         "event": "Community Event"
     }
 
+# Facebook pages/groups to scrape for Indian diaspora Midlands content
+FACEBOOK_PAGES = [
+    "IndianCommunityMidlands",
+    "BirminghamIndianCommunity",
+    "LeicesterDiwaliCelebrations",
+    "HinduTempleLeicester",
+    "IndianDiasporaUK",
+]
+
+# Scraper method 4: Facebook page scraping using facebook-scraper
+def run_facebook_scraper():
+    """Scrape Facebook pages for Indian diaspora community posts in the Midlands."""
+    c_user = os.getenv("FACEBOOK_C_USER", "")
+    xs = os.getenv("FACEBOOK_XS", "")
+
+    if not c_user or not xs or c_user == "your_c_user" or xs == "your_xs":
+        print("[WARNING] Facebook cookies not configured. Skipping Facebook scraping.")
+        print("  Set FACEBOOK_C_USER and FACEBOOK_XS in .env to enable.")
+        return
+
+    try:
+        from facebook_scraper import get_posts
+    except ImportError:
+        print("[ERROR] facebook-scraper not installed. Run: pip install facebook-scraper")
+        return
+
+    cookies = {"c_user": c_user, "xs": xs}
+    total_added = 0
+
+    for page in FACEBOOK_PAGES:
+        print(f"\n--- Fetching Facebook posts from {page} ---")
+        try:
+            posts = get_posts(page, pages=3, cookies=cookies, options={"comments": False, "reactions": False})
+            count = 0
+            for post in posts:
+                try:
+                    post_text = post.get("text", "").strip()
+                    if not post_text or len(post_text) < 20:
+                        continue
+
+                    # Check UK relevance
+                    if not is_uk_relevant(post_text):
+                        continue
+
+                    post_id = f"facebook_{post.get('post_id', page + str(count))}"
+                    analysis = analyze_tweet_with_gemini(post_text)
+
+                    # Parse date
+                    post_date = post.get("time")
+                    if post_date:
+                        date_str = post_date.strftime("%Y-%m-%d")
+                    else:
+                        date_str = datetime.now().strftime("%Y-%m-%d")
+
+                    new_item = {
+                        "id": post_id,
+                        "platform": "Facebook",
+                        "author": page,
+                        "date": date_str,
+                        "event": analysis.get("event", "General Community Feedback 2026"),
+                        "text": post_text,
+                        "sentiment": analysis.get("sentiment", "Neutral"),
+                        "city": analysis.get("city", "Birmingham"),
+                        "isUpcoming": bool(analysis.get("isUpcoming")),
+                    }
+                    upsert_feedback_local(new_item)
+                    total_added += 1
+                    count += 1
+                    print(f"[SUCCESS] Added Facebook post: {post_id}")
+                except Exception as post_err:
+                    print(f"[WARN] Skipping Facebook post: {str(post_err).encode('ascii','ignore').decode()}")
+                    continue
+
+            print(f"[INFO] Processed {count} posts from {page}")
+        except Exception as e:
+            print(f"Error fetching Facebook page {page}: {str(e).encode('ascii','ignore').decode()}")
+        import time
+        time.sleep(3)
+
+    print(f"\nFacebook ingestion complete! Processed {total_added} items.")
+
 # Local SQLite upsert
 def upsert_feedback_local(item):
     conn = sqlite3.connect(DB_PATH)
@@ -488,6 +569,9 @@ async def run_scraper():
 
     # Also fetch from official accounts (@MEAIndia, @HCI_London, @CGI_Bghm)
     await run_account_scraper()
+
+    # Fetch from Facebook pages
+    run_facebook_scraper()
 
     # Deduplicate the local DB
     deduplicate_db()
