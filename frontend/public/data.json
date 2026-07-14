@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-07-14T22:44:11.254477Z",
+  "exportedAt": "2026-07-14T22:55:39.714291Z",
   "totalFeedbackCount": 201,
   "sentimentPercentages": {
     "Positive": 24.38,
@@ -17,6 +17,480 @@
     "Birmingham": 169,
     "Wolverhampton": 1,
     "Nottingham": 1
+  },
+  "analytics": {
+    "trendingTerms": [
+      {
+        "term": "http",
+        "count": 59,
+        "positive": 20,
+        "neutral": 27,
+        "negative": 12
+      },
+      {
+        "term": "british",
+        "count": 46,
+        "positive": 2,
+        "neutral": 11,
+        "negative": 33
+      },
+      {
+        "term": "birmingham",
+        "count": 41,
+        "positive": 12,
+        "neutral": 24,
+        "negative": 5
+      },
+      {
+        "term": "indian",
+        "count": 40,
+        "positive": 16,
+        "neutral": 17,
+        "negative": 7
+      },
+      {
+        "term": "thi",
+        "count": 40,
+        "positive": 11,
+        "neutral": 8,
+        "negative": 21
+      },
+      {
+        "term": "india",
+        "count": 40,
+        "positive": 17,
+        "neutral": 19,
+        "negative": 4
+      },
+      {
+        "term": "asian",
+        "count": 32,
+        "positive": 4,
+        "neutral": 10,
+        "negative": 18
+      },
+      {
+        "term": "south",
+        "count": 30,
+        "positive": 5,
+        "neutral": 8,
+        "negative": 17
+      },
+      {
+        "term": "britain",
+        "count": 29,
+        "positive": 3,
+        "neutral": 14,
+        "negative": 12
+      },
+      {
+        "term": "muslim",
+        "count": 27,
+        "positive": 0,
+        "neutral": 2,
+        "negative": 25
+      },
+      {
+        "term": "pakistani",
+        "count": 26,
+        "positive": 0,
+        "neutral": 7,
+        "negative": 19
+      },
+      {
+        "term": "london",
+        "count": 24,
+        "positive": 6,
+        "neutral": 5,
+        "negative": 13
+      },
+      {
+        "term": "diwali",
+        "count": 23,
+        "positive": 6,
+        "neutral": 5,
+        "negative": 12
+      },
+      {
+        "term": "like",
+        "count": 19,
+        "positive": 1,
+        "neutral": 5,
+        "negative": 13
+      },
+      {
+        "term": "desi",
+        "count": 19,
+        "positive": 3,
+        "neutral": 15,
+        "negative": 1
+      }
+    ],
+    "keyIssues": [
+      {
+        "theme": "Weather Planning",
+        "count": 7,
+        "example": "Our current attorney General has made a career fighting for the rights of law abiding citizens.\n\nHARMER &amp; STARMER joined the Gravy train bringing the CHAGOS loophole where Brit"
+      },
+      {
+        "theme": "Pricing",
+        "count": 6,
+        "example": "Birmingham Holi Festival 2026 was okay, but the ticket pricing of £25 is far too expensive for students who want to join the colors."
+      },
+      {
+        "theme": "Transport",
+        "count": 6,
+        "example": "@NicholasLissack Bushra is yet another British-Pakistani Muslim woman heading abroad to cosy up to Islamist terrorists and reminds me of Shamima Begum.\n\nWhen will Britain stop impo"
+      },
+      {
+        "theme": "Waste & Litter",
+        "count": 6,
+        "example": "Minister of Parliamentary Affairs and Minority Affairs Shri Kiren Rijiju departed for Doha, Qatar today for conveying condolences on behalf of the Government and people of India on"
+      },
+      {
+        "theme": "Food & Catering",
+        "count": 5,
+        "example": "@QueenMab87 But Britain has lots of Caribbean, East Asian, South Asian, African immigrants, and others, and yes, they eat their own ethnic food.\n\nIf you don't like fried tomatoes, "
+      },
+      {
+        "theme": "Parking & Access",
+        "count": 4,
+        "example": "Frustrated with the lack of parking spaces near Handsworth Park for the Vaisakhi Mela. It took us 45 minutes just to find a spot!"
+      },
+      {
+        "theme": "Venue Size",
+        "count": 4,
+        "example": "Frustrated with the lack of parking spaces near Handsworth Park for the Vaisakhi Mela. It took us 45 minutes just to find a spot!"
+      },
+      {
+        "theme": "Ticketing",
+        "count": 4,
+        "example": "Birmingham Holi Festival 2026 was okay, but the ticket pricing of £25 is far too expensive for students who want to join the colors."
+      }
+    ],
+    "topPraises": [
+      {
+        "theme": "Community Spirit",
+        "count": 14,
+        "example": "Extremely excited for Coventry Navratri Garba 2026. The new massive venue is going to accommodate the growing community so well!"
+      },
+      {
+        "theme": "Culture",
+        "count": 9,
+        "example": "@Rightanglenews A controversial \"Englistan\" billboard was put up in Whitechapel, London. Whitechapel is one of London's most culturally vibrant and historically diverse districts.\n"
+      },
+      {
+        "theme": "Dance & Performance",
+        "count": 7,
+        "example": "It was a pleasure meeting Shri Shishir Bajoriya Ji during his short visit to London.\n\nAs a Core Committee Member of the BJP’s Foreign Affairs Department and Overseas Friends of BJP"
+      },
+      {
+        "theme": "Venue",
+        "count": 6,
+        "example": "Extremely excited for Coventry Navratri Garba 2026. The new massive venue is going to accommodate the growing community so well!"
+      },
+      {
+        "theme": "Food & Catering",
+        "count": 6,
+        "example": "@QueenMab87 But Britain has lots of Caribbean, East Asian, South Asian, African immigrants, and others, and yes, they eat their own ethnic food.\n\nIf you don't like fried tomatoes, "
+      },
+      {
+        "theme": "Dhol & Music",
+        "count": 5,
+        "example": "An Indian Summer Festival Begins Today Our festival begins with @sitarmusicsociety's event, Cycles and Circles Evening Raag from 7:30pm - 9:30pm. Immerse yourself in an enchanting "
+      },
+      {
+        "theme": "Lights & Visuals",
+        "count": 4,
+        "example": "The upcoming Leicester Diwali Lights Switch-On 2026 drone show looks absolutely spectacular. Can't wait to see the lights on Belgrave Road!"
+      },
+      {
+        "theme": "Drone Show",
+        "count": 4,
+        "example": "The upcoming Leicester Diwali Lights Switch-On 2026 drone show looks absolutely spectacular. Can't wait to see the lights on Belgrave Road!"
+      }
+    ],
+    "topEvents": [
+      {
+        "event": "Leicester Diwali Lights Switch-On 2026",
+        "count": 4,
+        "positive": 2,
+        "neutral": 2,
+        "negative": 0
+      },
+      {
+        "event": "Coventry Navratri Garba 2026",
+        "count": 3,
+        "positive": 2,
+        "neutral": 0,
+        "negative": 1
+      },
+      {
+        "event": "Midlands Holi Festival 2026",
+        "count": 3,
+        "positive": 1,
+        "neutral": 1,
+        "negative": 1
+      },
+      {
+        "event": "BRICS Trade Union Forum Summit",
+        "count": 2,
+        "positive": 0,
+        "neutral": 2,
+        "negative": 0
+      },
+      {
+        "event": "India-UK Comprehensive Economic And Trade Agreement 2026",
+        "count": 2,
+        "positive": 1,
+        "neutral": 1,
+        "negative": 0
+      },
+      {
+        "event": "UN Security Council Campaign Launch",
+        "count": 2,
+        "positive": 0,
+        "neutral": 2,
+        "negative": 0
+      },
+      {
+        "event": "Satyanarayan Katha",
+        "count": 2,
+        "positive": 2,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "event": "Patotsav",
+        "count": 2,
+        "positive": 2,
+        "neutral": 0,
+        "negative": 0
+      }
+    ],
+    "topAuthors": [
+      {
+        "author": "@HCI_London",
+        "count": 19
+      },
+      {
+        "author": "@CGI_Bghm",
+        "count": 18
+      },
+      {
+        "author": "SriBardai",
+        "count": 9
+      },
+      {
+        "author": "AISfestival",
+        "count": 7
+      },
+      {
+        "author": "@EclipeByDeath",
+        "count": 7
+      },
+      {
+        "author": "@MEAIndia",
+        "count": 5
+      },
+      {
+        "author": "@Prettycinderbel",
+        "count": 5
+      },
+      {
+        "author": "@skilfuldotcom",
+        "count": 4
+      }
+    ],
+    "sentimentByDate": {
+      "2026-07-14": {
+        "Positive": 22,
+        "Neutral": 42,
+        "Negative": 35
+      },
+      "2026-07-13": {
+        "Positive": 2,
+        "Neutral": 6,
+        "Negative": 5
+      },
+      "2026-07-12": {
+        "Positive": 0,
+        "Neutral": 1,
+        "Negative": 12
+      },
+      "2026-07-11": {
+        "Positive": 1,
+        "Neutral": 2,
+        "Negative": 1
+      },
+      "2026-07-10": {
+        "Positive": 1,
+        "Neutral": 0,
+        "Negative": 2
+      },
+      "2026-07-09": {
+        "Positive": 1,
+        "Neutral": 0,
+        "Negative": 0
+      },
+      "2026-07-08": {
+        "Positive": 2,
+        "Neutral": 3,
+        "Negative": 1
+      },
+      "2026-07-07": {
+        "Positive": 0,
+        "Neutral": 1,
+        "Negative": 0
+      },
+      "2026-07-06": {
+        "Positive": 3,
+        "Neutral": 3,
+        "Negative": 0
+      },
+      "2026-07-05": {
+        "Positive": 2,
+        "Neutral": 2,
+        "Negative": 0
+      },
+      "2026-07-03": {
+        "Positive": 0,
+        "Neutral": 1,
+        "Negative": 0
+      },
+      "2026-07-02": {
+        "Positive": 0,
+        "Neutral": 2,
+        "Negative": 0
+      },
+      "2026-07-01": {
+        "Positive": 1,
+        "Neutral": 0,
+        "Negative": 0
+      },
+      "2026-06-27": {
+        "Positive": 0,
+        "Neutral": 0,
+        "Negative": 1
+      }
+    },
+    "citySentiment": {
+      "Coventry": {
+        "Positive": 4,
+        "Neutral": 0,
+        "Negative": 1,
+        "total": 5
+      },
+      "Leicester": {
+        "Positive": 13,
+        "Neutral": 10,
+        "Negative": 2,
+        "total": 25
+      },
+      "Birmingham": {
+        "Positive": 30,
+        "Neutral": 74,
+        "Negative": 65,
+        "total": 169
+      },
+      "Wolverhampton": {
+        "Positive": 1,
+        "Neutral": 0,
+        "Negative": 0,
+        "total": 1
+      },
+      "Nottingham": {
+        "Positive": 1,
+        "Neutral": 0,
+        "Negative": 0,
+        "total": 1
+      }
+    },
+    "topNegativePosts": [
+      {
+        "id": "twitter_2076895404835402098",
+        "author": "@kerr_gordy17382",
+        "event": "General Community Feedback 2026",
+        "city": "Birmingham",
+        "text": "@D_Tarczynski @GalvanisedJohn I'm from Glasgow. we've become the rape capital of Britain because of mass immigration and the traitorous SNP has covered decades of rape gangs just looking up Operations Cotswold Dash and Cerrar from 2011-16 and a decad",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "twitter_2077115330984305103",
+        "author": "@elrat",
+        "event": "General Community Feedback 2025",
+        "city": "Birmingham",
+        "text": "@WHITEONLYPLANET @seumasabheinn @Victor_Coates82 Bollox! \n\nAs of 2025, Muslims make up approximately 6.5% of the population in England &amp; Wales. This demographic represents one of the fastest-growing and youngest groups in the country, with nearly",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "twitter_2077018326312927545",
+        "author": "@MigzRamon28927",
+        "event": "General Community Feedback 2026",
+        "city": "Birmingham",
+        "text": "@muneebqadirmmq U mean to say Imran Riaz is Equal to Shabbir Ahmed? \n\nYou mean to say Imran should see the same fate as Shabbir?\n\nAnd what is wrong about Tommy? What has he explicitly said that is wrong?\n\nHere is a British Pakistani admitting that Pa",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "twitter_2076985564423705071",
+        "author": "@TChugster",
+        "event": "General Community Feedback 2026",
+        "city": "Birmingham",
+        "text": "@benonwine No reparations should ever be paid. \n\nAre they asking reparations from other European empires from the time, some like Spain, France and Portugal had more slaves the Britain ever did?\n\nAre they asking for reparations from the African natio",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "twitter_2077119232144224363",
+        "author": "@Huhimagine",
+        "event": "General Community Feedback 2026",
+        "city": "Birmingham",
+        "text": "@Fwoggie @BobCrauford @USWPColby No, I did not get my information from X or Fox News, I got them through these published reports.. 👇🏻👇🏻👇🏻\nHere is a list of key official UK reports and inquiries into group-based child sexual exploitation (“grooming ga",
+        "date": "2026-07-14"
+      }
+    ],
+    "topPositivePosts": [
+      {
+        "id": "facebook_AISfestival_e11eb17f01de",
+        "author": "AISfestival",
+        "event": "Indian Summer Festival: Cycles and Circles Evening Raag",
+        "city": "Leicester",
+        "text": "An Indian Summer Festival Begins Today Our festival begins with @sitarmusicsociety's event, Cycles and Circles Evening Raag from 7:30pm - 9:30pm. Immerse yourself in an enchanting evening of Indian classical music that traces the enduring beauty of c",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "facebook_SriBardai_2d046e569c53",
+        "author": "SriBardai",
+        "event": "Satyanarayan Katha",
+        "city": "Leicester",
+        "text": "Looking forward to seeing you all tomorrow for the Satyanarayan Katha Please do not worry if you have not had the opportunity to RSVP, as you are still more than welcome to join us on the day The deadline to participate as a Yajman has now passed, so",
+        "date": "2026-07-14"
+      },
+      {
+        "id": "twitter_2075216349677146278",
+        "author": "@WolvesMayor",
+        "event": "South Asian Heritage Month Celebration",
+        "city": "Wolverhampton",
+        "text": "A pleasure to join colleagues &amp; guests at New Cross Hospital to celebrate South Asian Heritage Month. Thank you for hosting such a meaningful event, recognising the rich cultures, contributions and achievements of our South Asian communities acro",
+        "date": "2026-07-09"
+      },
+      {
+        "id": "twitter_1977690005305753792",
+        "author": "@HCI_London",
+        "event": "General Community Feedback 2026",
+        "city": "Birmingham",
+        "text": "Following UK PM @Keir_Starmer's visit to India with the largest-ever UK trade delegation, take a look at what business leaders have to say about the India–UK CETA being a game-changer! From textiles to technology, consumables to automobiles— it promi",
+        "date": "2025-10-13"
+      },
+      {
+        "id": "twitter_1996142425136382418",
+        "author": "@NIHRrdn",
+        "event": "Birmingham Mela",
+        "city": "Birmingham",
+        "text": "We've been spreading the word about #BePartOf Research at events and locations all over the country this year.\n\nAmong others, our West Midlands colleagues have visited Pride events, GP surgeries, the Birmingham Mela and shopping centres in the region",
+        "date": "2025-12-03"
+      }
+    ],
+    "executiveSummary": "Across 201 posts, the conversation is 24% positive, 42% neutral, and 34% negative. The main concerns residents are raising are Weather Planning, Pricing, Transport. The strongest positive feedback is around Community Spirit, Culture, Dance & Performance. Most discussed events include Leicester Diwali Lights Switch-On 2026, Coventry Navratri Garba 2026, Midlands Holi Festival 2026. Top discussion cities: Birmingham (169), Leicester (25), Coventry (5)."
   },
   "items": [
     {

@@ -192,6 +192,7 @@ function App() {
     platformCounts: {},
     cityCounts: {},
   });
+  const [analytics, setAnalytics] = useState(null);
 
   const [chatMessages, setChatMessages] = useState([
     {
@@ -292,17 +293,20 @@ function App() {
 
   const loadStaticData = async () => {
     let items = STATIC_FEEDBACK_ITEMS;
+    let analyticsData = null;
     try {
       const res = await fetch(STATIC_DATA_URL);
       if (res.ok) {
         const data = await res.json();
         items = deduplicateFeedback(data.items || []);
+        analyticsData = data.analytics || null;
       }
     } catch {
       // Fall back to hardcoded data if data.json cannot be fetched
     }
     setAllItems(items);
     setStats(getStatsForItems(items));
+    setAnalytics(analyticsData);
   };
 
   useEffect(() => {
@@ -473,6 +477,14 @@ function App() {
             <rect x="3" y="16" width="7" height="5" />
           </svg>
           Dashboard
+        </button>
+        <button className={`nav-tab ${activeTab === "insights" ? "active" : ""}`} onClick={() => setActiveTab("insights")}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="tab-icon">
+            <path d="M18 20V10" />
+            <path d="M12 20V4" />
+            <path d="M6 20v-6" />
+          </svg>
+          Insights
         </button>
         <button className={`nav-tab ${activeTab === "chat" ? "active" : ""}`} onClick={() => setActiveTab("chat")}>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="tab-icon">
@@ -699,7 +711,14 @@ function App() {
           </div>
         )}
 
-        {/* TAB 2: AI RAG CHAT */}
+        {/* TAB 2: INSIGHTS */}
+        {activeTab === "insights" && (
+          <div className="tab-content insights-tab fade-in">
+            <InsightsTab analytics={analytics} />
+          </div>
+        )}
+
+        {/* TAB 3: AI RAG CHAT */}
         {activeTab === "chat" && (
           <div className="tab-content chat-tab fade-in">
             {/* Gemini API Key input (hidden when preconfigured at build time) */}
@@ -925,6 +944,180 @@ function PlatformBar({ label, count, total, color }) {
       </div>
       <div className="bar-track" style={{ backgroundColor: `${color}26` }}>
         <div className="bar-fill" style={{ width: `${percentage}%`, backgroundColor: color }} />
+      </div>
+    </div>
+  );
+}
+
+function InsightsTab({ analytics }) {
+  if (!analytics) {
+    return (
+      <div className="insights-loading">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--color-primary)", opacity: 0.5 }}>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <p>Loading analytics...</p>
+      </div>
+    );
+  }
+
+  const issues = analytics.keyIssues || [];
+  const praises = analytics.topPraises || [];
+  const trending = analytics.trendingTerms || [];
+  const topEvents = analytics.topEvents || [];
+  const citySentiment = analytics.citySentiment || {};
+  const positivePosts = analytics.topPositivePosts || [];
+  const negativePosts = analytics.topNegativePosts || [];
+
+  const maxTrend = Math.max(...trending.map((t) => t.count), 1);
+
+  return (
+    <div className="insights-content">
+      <section className="dashboard-banner">
+        <div className="banner-top">
+          <span className="banner-badge">COUNCIL ANALYTICS</span>
+          <span className="banner-emoji">📊</span>
+        </div>
+        <h2>What the diaspora is talking about</h2>
+        <p>{analytics.executiveSummary}</p>
+      </section>
+
+      <div className="insights-grid-2">
+        <section className="metrics-card">
+          <h3 className="secondary-text">Key Issues</h3>
+          <div className="insights-list">
+            {issues.length === 0 && <p className="empty-insight">No major issues detected.</p>}
+            {issues.map((issue, idx) => (
+              <div key={idx} className="insight-row-item compact">
+                <div className="insight-emoji-box" style={{ backgroundColor: "var(--color-negative-container)", color: "var(--color-negative)" }}>
+                  ⚠
+                </div>
+                <div className="insight-content">
+                  <h4>{issue.theme}</h4>
+                  <p>{issue.example || `${issue.count} mentions`}</p>
+                </div>
+                <span className="insight-count">{issue.count}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="metrics-card">
+          <h3 className="primary-text">Top Praises</h3>
+          <div className="insights-list">
+            {praises.length === 0 && <p className="empty-insight">No major praise themes detected.</p>}
+            {praises.map((praise, idx) => (
+              <div key={idx} className="insight-row-item compact">
+                <div className="insight-emoji-box" style={{ backgroundColor: "var(--color-positive-container)", color: "var(--color-positive)" }}>
+                  ✨
+                </div>
+                <div className="insight-content">
+                  <h4>{praise.theme}</h4>
+                  <p>{praise.example || `${praise.count} mentions`}</p>
+                </div>
+                <span className="insight-count">{praise.count}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <section className="metrics-card trending-card">
+        <h3>Trending Terms</h3>
+        <div className="trending-cloud">
+          {trending.map((t, idx) => (
+            <div
+              key={idx}
+              className="trend-pill"
+              style={{
+                fontSize: `${0.85 + (t.count / maxTrend) * 0.7}rem`,
+                opacity: 0.7 + (t.count / maxTrend) * 0.3,
+              }}
+              title={`Positive ${t.positive}, Neutral ${t.neutral}, Negative ${t.negative}`}
+            >
+              <span className="trend-term">{t.term}</span>
+              <span className="trend-count">{t.count}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="insights-grid-2">
+        <section className="metrics-card">
+          <h3>Most Discussed Events</h3>
+          <div className="event-rank-list">
+            {topEvents.map((evt, idx) => {
+              const total = evt.count || 1;
+              return (
+                <div key={idx} className="event-rank-row">
+                  <div className="event-rank-header">
+                    <span className="event-rank-name">{evt.event}</span>
+                    <span className="event-rank-count">{evt.count} posts</span>
+                  </div>
+                  <div className="event-rank-bar">
+                    <div className="rank-bar-segment" style={{ width: `${(evt.positive / total) * 100}%`, backgroundColor: "var(--color-positive)" }} />
+                    <div className="rank-bar-segment" style={{ width: `${(evt.neutral / total) * 100}%`, backgroundColor: "var(--color-neutral)" }} />
+                    <div className="rank-bar-segment" style={{ width: `${(evt.negative / total) * 100}%`, backgroundColor: "var(--color-negative)" }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="metrics-card">
+          <h3>City Sentiment</h3>
+          <div className="city-sentiment-list">
+            {Object.entries(citySentiment)
+              .sort((a, b) => b[1].total - a[1].total)
+              .map(([city, data]) => {
+                const total = data.total || 1;
+                return (
+                  <div key={city} className="city-sentiment-row">
+                    <div className="city-sentiment-header">
+                      <span className="city-sentiment-name">{city}</span>
+                      <span className="city-sentiment-total">{data.total}</span>
+                    </div>
+                    <div className="city-sentiment-bar">
+                      <div className="rank-bar-segment" style={{ width: `${(data.Positive / total) * 100}%`, backgroundColor: "var(--color-positive)" }} />
+                      <div className="rank-bar-segment" style={{ width: `${(data.Neutral / total) * 100}%`, backgroundColor: "var(--color-neutral)" }} />
+                      <div className="rank-bar-segment" style={{ width: `${(data.Negative / total) * 100}%`, backgroundColor: "var(--color-negative)" }} />
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </section>
+      </div>
+
+      <div className="insights-grid-2">
+        <section className="metrics-card quote-card">
+          <h3 className="positive-text">Top Positive Feedback</h3>
+          {positivePosts.map((post, idx) => (
+            <blockquote key={idx} className="quote-item">
+              <p>"{post.text}"</p>
+              <footer>
+                <span className="quote-author">{post.author}</span>
+                <span className="quote-meta">{post.city} · {post.event}</span>
+              </footer>
+            </blockquote>
+          ))}
+        </section>
+
+        <section className="metrics-card quote-card">
+          <h3 className="negative-text">Top Negative Feedback</h3>
+          {negativePosts.map((post, idx) => (
+            <blockquote key={idx} className="quote-item">
+              <p>"{post.text}"</p>
+              <footer>
+                <span className="quote-author">{post.author}</span>
+                <span className="quote-meta">{post.city} · {post.event}</span>
+              </footer>
+            </blockquote>
+          ))}
+        </section>
       </div>
     </div>
   );
