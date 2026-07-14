@@ -1,13 +1,12 @@
 import os
 import asyncio
 import json
-import sqlite3
 from datetime import datetime
 from twikit import Client
 import httpx
 from dotenv import load_dotenv
 
-from database import get_db_connection, index_item_in_chroma
+from backend.supabase_store import store
 
 # Load environment
 load_dotenv(dotenv_path="../.env")
@@ -53,7 +52,7 @@ def analyze_tweet_with_gemini(text: str) -> dict:
             "event": "Community Event"
         }
         
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
     
     prompt = f"""
     Analyze the following social media post regarding Indian diaspora community events in the UK Midlands.
@@ -121,8 +120,6 @@ async def run_official_api_scraper(bearer_token: str):
         "cultural_events":      f'{UK_CITIES} ("Diwali" OR "Navratri" OR "Vaisakhi" OR "Holi" OR "Eid" OR "Mela") lang:en -is:retweet',
     }
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
     total_added = 0
     
     async with httpx.AsyncClient() as http_client:
@@ -152,20 +149,13 @@ async def run_official_api_scraper(bearer_token: str):
                 for tweet in tweets:
                     tweet_id = f"twitter_{tweet['id']}"
                     
-                    # Verify uniqueness
-                    cursor.execute("SELECT id FROM feedback_items WHERE id = ?", (tweet_id,))
-                    exists = cursor.fetchone()
-                    if exists:
-                        print(f"Tweet {tweet['id']} already exists in SQLite. Skipping.")
-                        continue
-                        
                     # UK relevance gate
+                    author_id = tweet.get("author_id")
+                    user_info = users.get(author_id, {})
                     if not is_uk_relevant(tweet["text"]):
                         print(f"[SKIP] Non-UK content filtered out from @{user_info.get('username', 'XUser')}")
                         continue
-                        
-                    author_id = tweet.get("author_id")
-                    user_info = users.get(author_id, {})
+
                     screen_name = user_info.get("username", "XUser")
                     
                     print(f"Found new tweet by: {user_info.get('name', 'User')} (@{screen_name})")
@@ -179,21 +169,6 @@ async def run_official_api_scraper(bearer_token: str):
                     except:
                         date_str = datetime.now().strftime("%Y-%m-%d")
                         
-                    cursor.execute("""
-                        INSERT INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        tweet_id,
-                        "Twitter",
-                        f"@{screen_name}",
-                        date_str,
-                        analysis.get("event", "General Community Feedback 2026"),
-                        tweet["text"],
-                        analysis.get("sentiment", "Neutral"),
-                        analysis.get("city", "Birmingham"),
-                        1 if analysis.get("isUpcoming") else 0
-                    ))
-                    
                     new_item = {
                         "id": tweet_id,
                         "platform": "Twitter",
@@ -203,20 +178,17 @@ async def run_official_api_scraper(bearer_token: str):
                         "text": tweet["text"],
                         "sentiment": analysis.get("sentiment", "Neutral"),
                         "city": analysis.get("city", "Birmingham"),
-                        "isUpcoming": 1 if analysis.get("isUpcoming") else 0
+                        "isUpcoming": bool(analysis.get("isUpcoming")),
                     }
-                    index_item_in_chroma(new_item)
+                    store.upsert_feedback(new_item)
                     total_added += 1
-                    print(f"[SUCCESS] Added & indexed tweet: {tweet['id']}")
-                    
-                conn.commit()
+                    print(f"[SUCCESS] Added tweet: {tweet['id']}")
             except Exception as e:
                 print(f"Error fetching category {category} with Official API: {e}")
                 
             await asyncio.sleep(2)
             
-    conn.close()
-    print(f"\nIngestion complete! Added {total_added} new items to SQLite and ChromaDB.")
+    print(f"\nIngestion complete! Processed {total_added} items in Supabase.")
 
 # Scraper method 2: Twikit Browser Scraper (Fallback)
 async def run_twikit_scraper():
@@ -278,8 +250,6 @@ async def run_twikit_scraper():
         "diaspora_news":        f'({UK_CITIES}) ("British Indian" OR "British Pakistani" OR "British Bangladeshi" OR "British Sikh" OR "British Hindu" OR "British Muslim") lang:en -is:retweet',
     }
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
     total_added = 0
     
     for category, query_string in queries.items():
@@ -291,13 +261,6 @@ async def run_twikit_scraper():
                 try:
                     tweet_id = f"twitter_{tweet.id}"
                     
-                    cursor.execute("SELECT id FROM feedback_items WHERE id = ?", (tweet_id,))
-                    exists = cursor.fetchone()
-                    
-                    if exists:
-                        print(f"Tweet {tweet.id} already exists in database. Skipping.")
-                        continue
-
                     # UK relevance gate: skip tweets with no UK connection
                     if not is_uk_relevant(tweet.text):
                         safe_name = tweet.user.screen_name.encode('ascii','ignore').decode()
@@ -319,22 +282,6 @@ async def run_twikit_scraper():
                     except:
                         date_str = datetime.now().strftime("%Y-%m-%d")
                     
-                    cursor.execute("""
-                        INSERT INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        tweet_id,
-                        "Twitter",
-                        f"@{tweet.user.screen_name}",
-                        date_str,
-                        analysis.get("event", "General Community Feedback 2026"),
-                        tweet.text,
-                        analysis.get("sentiment", "Neutral"),
-                        analysis.get("city", "Birmingham"),
-                        1 if analysis.get("isUpcoming") else 0
-                    ))
-                    conn.commit()  # Commit per-tweet to prevent rollback on later errors
-                    
                     new_item = {
                         "id": tweet_id,
                         "platform": "Twitter",
@@ -344,12 +291,11 @@ async def run_twikit_scraper():
                         "text": tweet.text,
                         "sentiment": analysis.get("sentiment", "Neutral"),
                         "city": analysis.get("city", "Birmingham"),
-                        "isUpcoming": 1 if analysis.get("isUpcoming") else 0
+                        "isUpcoming": bool(analysis.get("isUpcoming")),
                     }
-                    index_item_in_chroma(new_item)
-                    
+                    store.upsert_feedback(new_item)
                     total_added += 1
-                    print(f"[SUCCESS] Added & indexed tweet: {tweet.id}")
+                    print(f"[SUCCESS] Added tweet: {tweet.id}")
                     
                 except Exception as tweet_err:
                     print(f"[WARN] Skipping tweet due to error: {str(tweet_err).encode('ascii','ignore').decode()}")
@@ -360,8 +306,7 @@ async def run_twikit_scraper():
             
         await asyncio.sleep(5)
         
-    conn.close()
-    print(f"\nIngestion complete! Added {total_added} new items to SQLite and ChromaDB.")
+    print(f"\nIngestion complete! Processed {total_added} items in Supabase.")
 
 async def run_scraper():
     bearer_token = os.getenv("TWITTER_BEARER_TOKEN")

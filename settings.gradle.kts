@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Diaspora Hub"
+rootProject.name = "Midlands Sentiment"
 
 include(":app")

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./App.css";
 
-const API_BASE = "http://localhost:8000/api";
+const STATIC_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
+const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_API_URL = (apiKey) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
 const STATIC_FEEDBACK_ITEMS = [
   {
@@ -178,7 +183,7 @@ function App() {
   const [selectedSentiment, setSelectedSentiment] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
 
-  const [isBackendAvailable, setIsBackendAvailable] = useState(true);
+  const [allItems, setAllItems] = useState([]);
   const [feedItems, setFeedItems] = useState(STATIC_FEEDBACK_ITEMS);
   const [stats, setStats] = useState({
     totalFeedbackCount: STATIC_FEEDBACK_ITEMS.length,
@@ -190,215 +195,140 @@ function App() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "BOT",
-      text: "Hello! I am your RAG-enabled Diaspora Assistant. I have indexed all 2026 social media feedback from Twitter, Facebook, and Quora regarding Indian diaspora community events and upcoming activities in the Midlands. Ask me anything, or run sentiment / trend queries!",
+      text: "Hello! I am your Midlands Sentiment assistant. Enter your Gemini API key below to ask questions about the Indian diaspora community feedback loaded from this static feed.",
       timestamp: Date.now(),
     },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatError, setChatError] = useState(null);
-
-  const [localApiKey, setLocalApiKey] = useState(() => {
-    return localStorage.getItem("diaspora_gemini_api_key") || "";
-  });
-
-  const [isScraping, setIsScraping] = useState(false);
-  const [scrapeStatus, setScrapeStatus] = useState(null);
-  const [lastScraped, setLastScraped] = useState(null);
+  const [geminiApiKey, setGeminiApiKey] = useState("");
 
   const chatEndRef = useRef(null);
 
-  // Poll scrape status while running
-  const fetchScrapeStatus = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/scrape/status`);
-      if (res.ok) {
-        const data = await res.json();
-        setIsScraping(data.is_running);
-        setScrapeStatus(data.status_message);
-        if (data.last_run) setLastScraped(data.last_run);
-        if (!data.is_running && data.last_run) {
-          // Refresh data after scrape completes
-          fetchStats();
-          fetchFeedback();
-        }
-      }
-    } catch (_) {}
+  // Load any previously saved Gemini API key from this browser
+  useEffect(() => {
+    const savedKey = localStorage.getItem("midlands-sentiment-gemini-key");
+    if (savedKey) setGeminiApiKey(savedKey);
+  }, []);
+
+  const isMoreCompleteRecord = (candidate, existing) => {
+    const score = (item) =>
+      (item.isUpcoming ? 4 : 0) +
+      (item.event !== "Community Event" && item.event !== "General Community Feedback 2026" ? 2 : 0) +
+      (item.sentiment !== "Neutral" ? 1 : 0);
+
+    return score(candidate) > score(existing);
   };
 
-  const triggerScrape = async () => {
-    if (isScraping || !isBackendAvailable) return;
-    try {
-      const res = await fetch(`${API_BASE}/scrape`, { method: "POST" });
-      if (res.ok) {
-        setIsScraping(true);
-        setScrapeStatus("Starting UK diaspora scraper...");
-        // Poll every 4 seconds while running
-        const poll = setInterval(async () => {
-          const statusRes = await fetch(`${API_BASE}/scrape/status`);
-          if (statusRes.ok) {
-            const data = await statusRes.json();
-            setIsScraping(data.is_running);
-            setScrapeStatus(data.status_message);
-            if (data.last_run) setLastScraped(data.last_run);
-            if (!data.is_running) {
-              clearInterval(poll);
-              fetchStats();
-              fetchFeedback();
-            }
-          }
-        }, 4000);
-      }
-    } catch (_) {}
+  const getTextTokens = (text) => new Set(
+    text.toLowerCase().match(/[a-z0-9£]+/g) || []
+  );
+
+  const hasNearDuplicateText = (firstText, secondText) => {
+    const firstTokens = getTextTokens(firstText);
+    const secondTokens = getTextTokens(secondText);
+    const sharedTokens = [...firstTokens].filter((token) => secondTokens.has(token)).length;
+    const totalTokens = new Set([...firstTokens, ...secondTokens]).size;
+
+    return totalTokens > 0 && sharedTokens / totalTokens >= 0.9;
   };
 
+  const deduplicateFeedback = (items) => {
+    const uniqueItems = [];
 
-  // Fallback local calculations
-  const calculateLocalStats = () => {
-    const total = STATIC_FEEDBACK_ITEMS.length;
-    if (total === 0) return;
+    items.forEach((item) => {
+      const duplicateIndex = uniqueItems.findIndex((existing) =>
+        existing.platform.toLowerCase() === item.platform.toLowerCase() &&
+        existing.author.toLowerCase() === item.author.toLowerCase() &&
+        existing.date === item.date &&
+        hasNearDuplicateText(existing.text, item.text)
+      );
 
-    const positives = STATIC_FEEDBACK_ITEMS.filter(item => item.sentiment === "Positive").length;
-    const neutrals = STATIC_FEEDBACK_ITEMS.filter(item => item.sentiment === "Neutral").length;
-    const negatives = STATIC_FEEDBACK_ITEMS.filter(item => item.sentiment === "Negative").length;
-
-    const sentimentPercentages = {
-      Positive: (positives / total) * 100,
-      Neutral: (neutrals / total) * 100,
-      Negative: (negatives / total) * 100,
-    };
-
-    const platformCounts = {};
-    STATIC_FEEDBACK_ITEMS.forEach(item => {
-      platformCounts[item.platform] = (platformCounts[item.platform] || 0) + 1;
+      if (duplicateIndex === -1) {
+        uniqueItems.push(item);
+      } else if (isMoreCompleteRecord(item, uniqueItems[duplicateIndex])) {
+        uniqueItems[duplicateIndex] = item;
+      }
     });
 
+    return uniqueItems;
+  };
+
+  const getStatsForItems = (items) => {
+    const total = items.length;
+    if (total === 0) {
+      return {
+        totalFeedbackCount: 0,
+        sentimentPercentages: { Positive: 0, Neutral: 0, Negative: 0 },
+        platformCounts: {},
+        cityCounts: {},
+      };
+    }
+
+    const sentimentCounts = { Positive: 0, Neutral: 0, Negative: 0 };
+    const platformCounts = {};
     const cityCounts = {};
-    STATIC_FEEDBACK_ITEMS.forEach(item => {
+
+    items.forEach((item) => {
+      sentimentCounts[item.sentiment] = (sentimentCounts[item.sentiment] || 0) + 1;
+      platformCounts[item.platform] = (platformCounts[item.platform] || 0) + 1;
       cityCounts[item.city] = (cityCounts[item.city] || 0) + 1;
     });
 
-    setStats({
+    return {
       totalFeedbackCount: total,
-      sentimentPercentages,
+      sentimentPercentages: {
+        Positive: (sentimentCounts.Positive / total) * 100,
+        Neutral: (sentimentCounts.Neutral / total) * 100,
+        Negative: (sentimentCounts.Negative / total) * 100,
+      },
       platformCounts,
-      cityCounts
-    });
+      cityCounts,
+    };
   };
 
-  const filterLocalFeedback = () => {
-    let filtered = STATIC_FEEDBACK_ITEMS;
-    
+  const loadStaticData = async () => {
+    let items = STATIC_FEEDBACK_ITEMS;
+    try {
+      const res = await fetch(STATIC_DATA_URL);
+      if (res.ok) {
+        const data = await res.json();
+        items = deduplicateFeedback(data.items || []);
+      }
+    } catch {
+      // Fall back to hardcoded data if data.json cannot be fetched
+    }
+    setAllItems(items);
+    setStats(getStatsForItems(items));
+  };
+
+  useEffect(() => {
+    loadStaticData();
+  }, []);
+
+  useEffect(() => {
+    let filtered = deduplicateFeedback(allItems.length ? allItems : STATIC_FEEDBACK_ITEMS);
     if (selectedPlatform) {
-      filtered = filtered.filter(item => item.platform === selectedPlatform);
+      filtered = filtered.filter((item) => item.platform === selectedPlatform);
     }
     if (selectedSentiment) {
-      filtered = filtered.filter(item => item.sentiment === selectedSentiment);
+      filtered = filtered.filter((item) => item.sentiment === selectedSentiment);
     }
     if (selectedCity) {
-      filtered = filtered.filter(item => item.city === selectedCity);
+      filtered = filtered.filter((item) => item.city === selectedCity);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.text.toLowerCase().includes(q) ||
-        item.event.toLowerCase().includes(q) ||
-        item.author.toLowerCase().includes(q)
+      filtered = filtered.filter(
+        (item) =>
+          item.text.toLowerCase().includes(q) ||
+          item.event.toLowerCase().includes(q) ||
+          item.author.toLowerCase().includes(q)
       );
     }
     setFeedItems(filtered);
-  };
-
-  // Fetch stats (Hybrid: backend API → static data.json → hardcoded fallback)
-  const fetchStats = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/stats`);
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
-        setIsBackendAvailable(true);
-        return;
-      }
-    } catch (_) {}
-    // Backend not available — try static data.json (GitHub Pages)
-    setIsBackendAvailable(false);
-    try {
-      const res = await fetch(`/diaspora-hub/data.json`);
-      if (res.ok) {
-        const data = await res.json();
-        setStats({
-          totalFeedbackCount: data.totalFeedbackCount,
-          sentimentPercentages: data.sentimentPercentages,
-          platformCounts: data.platformCounts,
-          cityCounts: data.cityCounts,
-        });
-        setFeedItems(data.items || []);
-        return;
-      }
-    } catch (_) {}
-    // Last resort — hardcoded data
-    calculateLocalStats();
-  };
-
-  // Fetch feedback items (Hybrid: backend API → static data.json → hardcoded fallback)
-  const fetchFeedback = async () => {
-    if (!isBackendAvailable) {
-      // Try static data.json first
-      try {
-        const res = await fetch(`/diaspora-hub/data.json`);
-        if (res.ok) {
-          const data = await res.json();
-          let items = data.items || [];
-          if (selectedPlatform) items = items.filter(i => i.platform === selectedPlatform);
-          if (selectedSentiment) items = items.filter(i => i.sentiment === selectedSentiment);
-          if (selectedCity) items = items.filter(i => i.city === selectedCity);
-          if (searchQuery.trim()) {
-            const q = searchQuery.toLowerCase();
-            items = items.filter(i =>
-              i.text.toLowerCase().includes(q) ||
-              i.event.toLowerCase().includes(q) ||
-              i.author.toLowerCase().includes(q)
-            );
-          }
-          setFeedItems(items);
-          return;
-        }
-      } catch (_) {}
-      filterLocalFeedback();
-      return;
-    }
-    try {
-      let url = `${API_BASE}/feedback?`;
-      const params = [];
-      if (searchQuery) params.push(`query=${encodeURIComponent(searchQuery)}`);
-      if (selectedPlatform) params.push(`platform=${encodeURIComponent(selectedPlatform)}`);
-      if (selectedSentiment) params.push(`sentiment=${encodeURIComponent(selectedSentiment)}`);
-      if (selectedCity) params.push(`city=${encodeURIComponent(selectedCity)}`);
-      url += params.join("&");
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setFeedItems(data);
-      } else {
-        throw new Error();
-      }
-    } catch (err) {
-      setIsBackendAvailable(false);
-      filterLocalFeedback();
-    }
-  };
-
-  // Initial stats + scrape status trigger
-  useEffect(() => {
-    fetchStats();
-    if (isBackendAvailable) fetchScrapeStatus();
-  }, []);
-
-
-  // Dependencies trigger
-  useEffect(() => {
-    fetchFeedback();
-  }, [searchQuery, selectedPlatform, selectedSentiment, selectedCity, isBackendAvailable]);
+  }, [searchQuery, selectedPlatform, selectedSentiment, selectedCity, allItems]);
 
   // Scroll to bottom of chat
   useEffect(() => {
@@ -414,145 +344,69 @@ function App() {
     setSelectedCity(null);
   };
 
-  const getMarkdownSummary = () => {
-    let lines = [
-      "| Platform | Author | Date | Event | Sentiment | City | Feedback text |",
-      "| --- | --- | --- | --- | --- | --- | --- |"
-    ];
-    STATIC_FEEDBACK_ITEMS.forEach(item => {
-      const upcomingTag = item.isUpcoming ? " (Upcoming Planned Activity)" : "";
-      const textEscaped = item.text.replace(/\|/g, "\\|");
-      lines.push(
-        `| ${item.platform} | ${item.author} | ${item.date} | ${item.event}${upcomingTag} | ${item.sentiment} | ${item.city} | ${textEscaped} |`
-      );
+  const buildChatContext = (query, items) => {
+    const queryWords = new Set((query.toLowerCase().match(/[a-z0-9£]+/g) || []));
+    const scored = items.map((item) => {
+      const haystack = `${item.text} ${item.event} ${item.author} ${item.city}`.toLowerCase();
+      let score = 0;
+      queryWords.forEach((word) => {
+        if (haystack.includes(word)) score += 1;
+      });
+      return { item, score };
     });
-    return lines.join("\n");
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 5).map((s) => s.item);
   };
 
-  const handleApiKeyChange = (val) => {
-    setLocalApiKey(val);
-    localStorage.setItem("diaspora_gemini_api_key", val);
-  };
-
-  // Chat Execution (Hybrid backend proxy or browser direct)
   const handleSendChat = async (text) => {
     if (!text.trim() || isChatLoading) return;
 
-    const userMessage = { sender: "USER", text: text.trim(), timestamp: Date.now() };
-    const updatedMessages = [...chatMessages, userMessage];
-    setChatMessages(updatedMessages);
+    const trimmed = text.trim();
+    if (!geminiApiKey.trim()) {
+      setChatError("Please enter your Gemini API key in the chat settings above.");
+      return;
+    }
+
+    const userMessage = { sender: "USER", text: trimmed, timestamp: Date.now() };
+    setChatMessages((prev) => [...prev, userMessage]);
     setChatInput("");
     setIsChatLoading(true);
     setChatError(null);
 
-    // 1. Attempt using hosted backend proxy if available
-    if (isBackendAvailable) {
-      try {
-        const payload = {
-          message: text.trim(),
-          history: chatMessages.map((msg) => ({
-            sender: msg.sender,
-            text: msg.text,
-          })),
-        };
+    const contextItems = buildChatContext(trimmed, allItems.length ? allItems : STATIC_FEEDBACK_ITEMS);
+    const contextText = contextItems
+      .map(
+        (item) =>
+          `- ${item.sentiment} (${item.platform}, ${item.city}, ${item.date}): ${item.text}`
+      )
+      .join("\n");
 
-        const res = await fetch(`${API_BASE}/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setChatMessages((prev) => [
-            ...prev,
-            {
-              sender: "BOT",
-              text: data.reply,
-              timestamp: Date.now(),
-            },
-          ]);
-          setIsChatLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn("Backend chat failed, falling back to serverless mode.");
-      }
-    }
-
-    // 2. Fallback: browser direct calling using Client-Side API Key
-    const activeApiKey = localApiKey.trim() || import.meta.env.VITE_GEMINI_API_KEY || "";
-
-    if (!activeApiKey || activeApiKey === "MY_GEMINI_API_KEY" || activeApiKey === "YOUR_GEMINI_API_KEY") {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          sender: "BOT",
-          text: "⚠️ **API Key Missing**: It looks like your Gemini API key is not set. Please enter it in the **Gemini API Key input field** below the chat box to perform live RAG analysis!\n\n*(Meanwhile, here is a quick overview: Holi tickets are seen as too expensive, Diwali drone plans are exciting but park-and-ride is requested, and Coventry Garba has ticket scalping issues.)*",
-          timestamp: Date.now(),
-        },
-      ]);
-      setIsChatLoading(false);
-      return;
-    }
-
-    const systemInstructionText = `You are the "Diaspora RAG Bot", an expert sentiment analyzer and community reporter for the Indian Diaspora in the UK Midlands (including Birmingham, Leicester, Coventry, Wolverhampton, Nottingham, etc.).
-
-You have access to a consolidated database of social media feedback from Twitter (X), Facebook, and Quora regarding community event engagement in 2026, and upcoming planned events.
-
-Here is the entire consolidated dataset in Markdown format:
-${getMarkdownSummary()}
-
-Instructions for your responses:
-1. Answer the user's questions based strictly on the provided feedback dataset. Do not invent any posts, authors, or events that are not in the dataset.
-2. If the user asks about sentiment, give an insightful analysis of Positive vs Neutral vs Negative feedback, highlighting specific complaints and achievements.
-3. Use bold text, bullet points, and clean headers. Speak with deep familiarity about Midlands UK geography.
-4. If a query is outside the scope of community events, state: "I couldn't find specific social feedback on that in our consolidated 2026 Midlands database. However, based on our recorded trends..." and summarize the nearest relevant trend.`;
-
-    const apiContents = updatedMessages.map((msg) => ({
-      role: msg.sender === "USER" ? "user" : "model",
-      parts: [{ text: msg.text }],
-    }));
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${activeApiKey}`;
+    const prompt = `You are Midlands Sentiment, an assistant that answers questions about Indian diaspora community feedback in the UK Midlands. Use the feedback context below to answer the user's question. If the context does not contain the answer, say so honestly and concisely.\n\nFeedback context:\n${contextText}\n\nUser question: ${trimmed}\n\nAnswer concisely.`;
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(GEMINI_API_URL(geminiApiKey), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: apiContents,
-          systemInstruction: {
-            parts: [{ text: systemInstructionText }]
-          },
-          generationConfig: {
-            temperature: 0.3
-          }
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
         }),
       });
-
-      if (!res.ok) {
-        throw new Error(`Gemini API returned status ${res.status}`);
-      }
-
+      if (!res.ok) throw new Error("Gemini API request failed.");
       const data = await res.json();
-      const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "I received an empty response.";
+      const reply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "I didn't get a response from Gemini.";
       setChatMessages((prev) => [
         ...prev,
-        {
-          sender: "BOT",
-          text: replyText,
-          timestamp: Date.now(),
-        },
+        { sender: "BOT", text: reply, timestamp: Date.now() },
       ]);
-    } catch (err) {
-      console.error(err);
-      setChatError("Failed to connect to Gemini API: " + err.message);
+    } catch {
+      setChatError("Gemini API call failed. Check your API key and try again.");
       setChatMessages((prev) => [
         ...prev,
         {
           sender: "BOT",
-          text: `❌ **Error**: Could not connect to Gemini API. ${err.message}`,
+          text: "❌ Error: Gemini API call failed. Please check your API key and try again.",
           timestamp: Date.now(),
         },
       ]);
@@ -585,51 +439,18 @@ Instructions for your responses:
 
   return (
     <div className="app-container">
+      <Analytics />
+      <SpeedInsights />
       {/* 1. Header Toolbar */}
       <header className="app-header">
         <div className="header-brand">
-          <div className="brand-avatar">DP</div>
+          <div className="brand-avatar">MS</div>
           <div className="brand-text">
-            <h1>Midlands Pulse '26</h1>
-            <span>INDIAN DIASPORA ENGAGEMENT {isBackendAvailable ? "🟢 (LIVE BACKEND)" : "🟡 (SERVERLESS LOCAL)"}</span>
+            <h1>Midlands Sentiment</h1>
+            <span>INDIAN DIASPORA ENGAGEMENT — STATIC FEED</span>
           </div>
         </div>
         <div className="header-actions">
-          {isBackendAvailable && (
-            <div className="scrape-control">
-              {lastScraped && (
-                <span className="last-scraped-label">
-                  Last fetched: {new Date(lastScraped).toLocaleTimeString()}
-                </span>
-              )}
-              <button
-                id="fetch-new-data-btn"
-                className={`fetch-data-button ${isScraping ? "scraping" : ""}`}
-                onClick={triggerScrape}
-                disabled={isScraping}
-                title={isScraping ? scrapeStatus : "Fetch latest UK diaspora posts from X (Twitter)"}
-              >
-                {isScraping ? (
-                  <>
-                    <span className="scrape-spinner"></span>
-                    Fetching...
-                  </>
-                ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="23 4 23 10 17 10" />
-                      <polyline points="1 20 1 14 7 14" />
-                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                    </svg>
-                    Fetch New Data
-                  </>
-                )}
-              </button>
-              {scrapeStatus && !isScraping && (
-                <span className="scrape-done-label">{scrapeStatus}</span>
-              )}
-            </div>
-          )}
           <button className="reset-button" onClick={handleClearFilters} title="Reset all filters">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
@@ -692,7 +513,7 @@ Instructions for your responses:
               </div>
               <div className="kpi-card mentions-kpi">
                 <span className="kpi-title">Mentions</span>
-                <span className="kpi-value">{isBackendAvailable ? stats.totalFeedbackCount : "12.4k"}</span>
+                <span className="kpi-value">{stats.totalFeedbackCount}</span>
                 <span className="kpi-subtitle">SOCIAL AGG</span>
               </div>
               <div className="kpi-card events-kpi">
@@ -879,6 +700,22 @@ Instructions for your responses:
         {/* TAB 2: AI RAG CHAT */}
         {activeTab === "chat" && (
           <div className="tab-content chat-tab fade-in">
+            {/* Gemini API Key input */}
+            <div className="chat-key-prompt">
+              <label htmlFor="gemini-key">Gemini API Key</label>
+              <input
+                id="gemini-key"
+                type="password"
+                value={geminiApiKey}
+                onChange={(e) => {
+                  setGeminiApiKey(e.target.value);
+                  localStorage.setItem("midlands-sentiment-gemini-key", e.target.value);
+                }}
+                placeholder="Paste your Gemini API key here"
+              />
+              <span className="key-hint">Stored only in this browser.</span>
+            </div>
+
             {/* Chat Messages */}
             <div className="chat-messages-container">
               {chatMessages.map((msg, idx) => (
@@ -922,27 +759,11 @@ Instructions for your responses:
               </div>
             </div>
 
-            {/* Local Client API Key configuration panel (Only displayed or required when serverless fallback is active) */}
-            {!isBackendAvailable && (
-              <div className="api-key-input-container">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="key-icon">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                <input
-                  type="password"
-                  placeholder="Enter Gemini API Key for serverless fallback (saved locally)..."
-                  value={localApiKey}
-                  onChange={(e) => handleApiKeyChange(e.target.value)}
-                />
-              </div>
-            )}
-
             {/* Chat Input */}
             <div className="chat-input-bar">
               <input
                 type="text"
-                placeholder={isBackendAvailable ? "Ask Live RAG chatbot (linked to vector DB)..." : "Ask Local RAG chatbot..."}
+                placeholder="Ask the Midlands Sentiment RAG assistant..."
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSendChat(chatInput)}

@@ -1,4 +1,4 @@
-/* Premium Sleek Dark Mode Brand Theme for Diaspora Hub (Midlands Pulse) */
+/* Premium Sleek Dark Mode Brand Theme for Midlands Sentiment */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -1348,4 +1348,47 @@ body {
   border-color: var(--color-primary);
   border-style: solid;
   background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Chat Gemini Key Prompt */
+.chat-key-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 24px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chat-key-prompt label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chat-key-prompt input {
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  transition: var(--transition-smooth);
+}
+
+.chat-key-prompt input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  border-style: solid;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.chat-key-prompt .key-hint {
+  font-size: 11px;
+  color: var(--text-muted);
 }

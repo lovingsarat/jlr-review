@@ -25,4 +25,5 @@ __pycache__/
 backend/diaspora.db
 backend/chroma_db/
 backend/cookies.json
+.vercel/
 
