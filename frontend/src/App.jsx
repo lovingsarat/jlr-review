@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./App.css";
 
 const STATIC_DATA_URL = `${import.meta.env.BASE_URL}data.json`;
+const ENV_GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const GEMINI_MODEL = "gemini-2.0-flash";
 const GEMINI_API_URL = (apiKey) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
@@ -195,19 +196,22 @@ function App() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "BOT",
-      text: "Hello! I am your Midlands Sentiment assistant. Enter your Gemini API key below to ask questions about the Indian diaspora community feedback loaded from this static feed.",
+      text: ENV_GEMINI_KEY
+        ? "Hello! I am your Midlands Sentiment assistant. Ask me anything about the Indian diaspora community feedback loaded from this feed."
+        : "Hello! I am your Midlands Sentiment assistant. Enter your Gemini API key below to ask questions about the Indian diaspora community feedback loaded from this static feed.",
       timestamp: Date.now(),
     },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatError, setChatError] = useState(null);
-  const [geminiApiKey, setGeminiApiKey] = useState("");
+  const [geminiApiKey, setGeminiApiKey] = useState(ENV_GEMINI_KEY);
 
   const chatEndRef = useRef(null);
 
-  // Load any previously saved Gemini API key from this browser
+  // Load any previously saved Gemini API key from this browser (env key takes priority)
   useEffect(() => {
+    if (ENV_GEMINI_KEY) return;
     const savedKey = localStorage.getItem("midlands-sentiment-gemini-key");
     if (savedKey) setGeminiApiKey(savedKey);
   }, []);
@@ -700,21 +704,23 @@ function App() {
         {/* TAB 2: AI RAG CHAT */}
         {activeTab === "chat" && (
           <div className="tab-content chat-tab fade-in">
-            {/* Gemini API Key input */}
-            <div className="chat-key-prompt">
-              <label htmlFor="gemini-key">Gemini API Key</label>
-              <input
-                id="gemini-key"
-                type="password"
-                value={geminiApiKey}
-                onChange={(e) => {
-                  setGeminiApiKey(e.target.value);
-                  localStorage.setItem("midlands-sentiment-gemini-key", e.target.value);
-                }}
-                placeholder="Paste your Gemini API key here"
-              />
-              <span className="key-hint">Stored only in this browser.</span>
-            </div>
+            {/* Gemini API Key input (hidden when preconfigured at build time) */}
+            {!ENV_GEMINI_KEY && (
+              <div className="chat-key-prompt">
+                <label htmlFor="gemini-key">Gemini API Key</label>
+                <input
+                  id="gemini-key"
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => {
+                    setGeminiApiKey(e.target.value);
+                    localStorage.setItem("midlands-sentiment-gemini-key", e.target.value);
+                  }}
+                  placeholder="Paste your Gemini API key here"
+                />
+                <span className="key-hint">Stored only in this browser.</span>
+              </div>
+            )}
 
             {/* Chat Messages */}
             <div className="chat-messages-container">
