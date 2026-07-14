@@ -84,7 +84,7 @@ def query_chroma_context(query_text: str, k: int = 5) -> str:
         cursor.execute("SELECT COUNT(*) FROM feedback_items")
         total_items = cursor.fetchone()[0]
         
-        if total_items <= 30:
+        if total_items <= 200:
             cursor.execute("SELECT * FROM feedback_items")
             rows = cursor.fetchall()
             conn.close()
@@ -124,7 +124,7 @@ def query_chroma_context(query_text: str, k: int = 5) -> str:
                     params.extend([f"%{w}%", f"%{w}%"])
                 query_str += " AND (" + " OR ".join(conditions) + ")"
             query_str += " LIMIT ?"
-            params.append(k)
+            params.append(20)
             cursor.execute(query_str, params)
             rows = cursor.fetchall()
             conn.close()
