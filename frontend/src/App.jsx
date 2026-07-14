@@ -350,7 +350,7 @@ function App() {
     setSelectedCity(null);
   };
 
-  const buildChatContext = (query, items) => {
+  const buildChatContext = (query, items, limit = 8) => {
     const queryWords = new Set((query.toLowerCase().match(/[a-z0-9£]+/g) || []));
     const scored = items.map((item) => {
       const haystack = `${item.text} ${item.event} ${item.author} ${item.city}`.toLowerCase();
@@ -361,7 +361,29 @@ function App() {
       return { item, score };
     });
     scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, 5).map((s) => s.item);
+    return scored.slice(0, limit).map((s) => s.item);
+  };
+
+  const buildAnalyticsContext = (analytics) => {
+    if (!analytics) return "No analytics summary available.";
+    const issues = analytics.keyIssues || [];
+    const praises = analytics.topPraises || [];
+    const events = analytics.topEvents || [];
+    const terms = analytics.trendingTerms || [];
+    const pos = analytics.topPositivePosts || [];
+    const neg = analytics.topNegativePosts || [];
+
+    const formatList = (arr, key = "theme") => arr.map((x) => x[key]).filter(Boolean).join(", ") || "none";
+
+    return (
+      `Analytics summary: ${analytics.executiveSummary || "No summary available."}\n` +
+      `Key issues: ${formatList(issues)}\n` +
+      `Top praises: ${formatList(praises)}\n` +
+      `Most discussed events: ${formatList(events, "event")}\n` +
+      `Trending terms: ${formatList(terms, "term")}\n` +
+      `Top positive posts: ${pos.map((p) => p.text).join(" | ") || "none"}\n` +
+      `Top negative posts: ${neg.map((p) => p.text).join(" | ") || "none"}`
+    );
   };
 
   const handleSendChat = async (text) => {
@@ -379,7 +401,8 @@ function App() {
     setIsChatLoading(true);
     setChatError(null);
 
-    const contextItems = buildChatContext(trimmed, allItems.length ? allItems : STATIC_FEEDBACK_ITEMS);
+    const sourceItems = allItems.length ? allItems : STATIC_FEEDBACK_ITEMS;
+    const contextItems = buildChatContext(trimmed, sourceItems, 8);
     const contextText = contextItems
       .map(
         (item) =>
@@ -387,7 +410,9 @@ function App() {
       )
       .join("\n");
 
-    const prompt = `You are Midlands Sentiment, an assistant that answers questions about Indian diaspora community feedback in the UK Midlands. Use the feedback context below to answer the user's question. If the context does not contain the answer, say so honestly and concisely.\n\nFeedback context:\n${contextText}\n\nUser question: ${trimmed}\n\nAnswer concisely.`;
+    const analyticsContext = buildAnalyticsContext(analytics);
+
+    const prompt = `You are Midlands Sentiment, an assistant that answers questions about Indian diaspora community feedback in the UK Midlands.\n\nUse the COUNCIL ANALYTICS SUMMARY for top, ranking, comparison, count, summary, or aggregation questions. Use the FEEDBACK CONTEXT for specific quotes and details. If the user asks for a number of items (e.g., top 5), list exactly that many. If the answer is not in the context, say so honestly and concisely.\n\nCOUNCIL ANALYTICS SUMMARY:\n${analyticsContext}\n\nFEEDBACK CONTEXT:\n${contextText}\n\nUser question: ${trimmed}\n\nAnswer concisely.`;
 
     try {
       const res = await fetch(GEMINI_API_URL(geminiApiKey), {
