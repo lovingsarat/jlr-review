@@ -193,18 +193,40 @@ async def run_twikit_scraper():
     email = os.getenv("TWITTER_EMAIL")
     password = os.getenv("TWITTER_PASSWORD")
     
-    if not username or username == "your_username":
-        print("[WARNING] X credentials missing or set to placeholder in .env. Skipping X scraping.")
-        return
-        
-    print(f"Authenticating with X account: {username}...")
+    cookies_file = "cookies.json"
+    cookies_loaded = False
     
-    try:
-        cookies_file = "cookies.json"
-        if os.path.exists(cookies_file):
-            client.load_cookies(cookies_file)
-            print("Loaded session cookies from cache.")
-        else:
+    if os.path.exists(cookies_file):
+        try:
+            with open(cookies_file, 'r') as f:
+                cookies_data = json.load(f)
+            if isinstance(cookies_data, list):
+                cookies_dict = {c["name"]: c["value"] for c in cookies_data if "name" in c and "value" in c}
+                client.set_cookies(cookies_dict)
+                cookies_loaded = True
+            elif isinstance(cookies_data, dict):
+                if "ct0" in cookies_data or "auth_token" in cookies_data:
+                    client.set_cookies(cookies_data)
+                    cookies_loaded = True
+                else:
+                    try:
+                        client.load_cookies(cookies_file)
+                        cookies_loaded = True
+                    except:
+                        pass
+            if cookies_loaded:
+                print("Loaded session cookies from cookies.json successfully.")
+        except Exception as e:
+            print(f"Failed to load cookies.json: {e}. Attempting standard login...")
+            
+    if not cookies_loaded:
+        if not username or username == "your_username":
+            print("[WARNING] X credentials missing and no valid cookies.json found. Skipping X scraping.")
+            return
+            
+        print(f"Authenticating with X account: {username}...")
+        
+        try:
             await client.login(
                 auth_info_1=username,
                 auth_info_2=email,
@@ -212,9 +234,9 @@ async def run_twikit_scraper():
             )
             client.save_cookies(cookies_file)
             print("Successfully authenticated and cached session cookies.")
-    except Exception as e:
-        print(f"[ERROR] Authentication failed: {e}")
-        return
+        except Exception as e:
+            print(f"[ERROR] Authentication failed: {e}")
+            return
 
     queries = {
         "diaspora": '("Indian diaspora" OR "Desi") AND ("West Midlands" OR "Birmingham")',
