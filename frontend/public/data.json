@@ -1,31 +1,45 @@
 {
-  "exportedAt": "2026-07-15T12:19:15.353156Z",
-  "totalFeedbackCount": 252,
+  "exportedAt": "2026-07-15T13:41:32.531055Z",
+  "totalFeedbackCount": 318,
   "sentimentPercentages": {
-    "Positive": 25.79,
-    "Neutral": 44.84,
-    "Negative": 29.37
+    "Positive": 21.7,
+    "Neutral": 54.09,
+    "Negative": 24.21
   },
   "platformCounts": {
     "Twitter": 215,
     "Facebook": 33,
-    "Quora": 4
+    "Quora": 70
   },
   "cityCounts": {
-    "Birmingham": 217,
-    "Leicester": 28,
-    "Coventry": 5,
-    "Wolverhampton": 1,
-    "Nottingham": 1
+    "Birmingham": 269,
+    "Leicester": 36,
+    "Coventry": 9,
+    "Nottingham": 3,
+    "Wolverhampton": 1
   },
   "analytics": {
     "trendingTerms": [
       {
         "term": "india",
-        "count": 77,
+        "count": 88,
         "positive": 43,
-        "neutral": 30,
+        "neutral": 41,
         "negative": 4
+      },
+      {
+        "term": "indian",
+        "count": 88,
+        "positive": 22,
+        "neutral": 55,
+        "negative": 11
+      },
+      {
+        "term": "british",
+        "count": 82,
+        "positive": 2,
+        "neutral": 42,
+        "negative": 38
       },
       {
         "term": "http",
@@ -35,18 +49,25 @@
         "negative": 13
       },
       {
-        "term": "british",
-        "count": 59,
-        "positive": 2,
-        "neutral": 21,
-        "negative": 36
+        "term": "birmingham",
+        "count": 60,
+        "positive": 14,
+        "neutral": 41,
+        "negative": 5
       },
       {
-        "term": "indian",
+        "term": "what",
+        "count": 53,
+        "positive": 5,
+        "neutral": 32,
+        "negative": 16
+      },
+      {
+        "term": "asian",
         "count": 48,
-        "positive": 20,
-        "neutral": 21,
-        "negative": 7
+        "positive": 4,
+        "neutral": 25,
+        "negative": 19
       },
       {
         "term": "thi",
@@ -56,25 +77,32 @@
         "negative": 22
       },
       {
-        "term": "birmingham",
-        "count": 41,
-        "positive": 12,
-        "neutral": 24,
-        "negative": 5
-      },
-      {
-        "term": "asian",
-        "count": 36,
-        "positive": 4,
-        "neutral": 13,
-        "negative": 19
-      },
-      {
         "term": "south",
-        "count": 34,
+        "count": 45,
         "positive": 5,
-        "neutral": 11,
+        "neutral": 22,
         "negative": 18
+      },
+      {
+        "term": "london",
+        "count": 36,
+        "positive": 7,
+        "neutral": 15,
+        "negative": 14
+      },
+      {
+        "term": "like",
+        "count": 35,
+        "positive": 1,
+        "neutral": 20,
+        "negative": 14
+      },
+      {
+        "term": "britain",
+        "count": 34,
+        "positive": 3,
+        "neutral": 18,
+        "negative": 13
       },
       {
         "term": "trade",
@@ -84,18 +112,11 @@
         "negative": 0
       },
       {
-        "term": "britain",
-        "count": 31,
-        "positive": 3,
-        "neutral": 15,
-        "negative": 13
-      },
-      {
-        "term": "london",
+        "term": "leicester",
         "count": 30,
-        "positive": 7,
-        "neutral": 9,
-        "negative": 14
+        "positive": 8,
+        "neutral": 21,
+        "negative": 1
       },
       {
         "term": "muslim",
@@ -103,27 +124,6 @@
         "positive": 0,
         "neutral": 3,
         "negative": 26
-      },
-      {
-        "term": "pakistani",
-        "count": 28,
-        "positive": 0,
-        "neutral": 8,
-        "negative": 20
-      },
-      {
-        "term": "amp",
-        "count": 26,
-        "positive": 14,
-        "neutral": 7,
-        "negative": 5
-      },
-      {
-        "term": "diwali",
-        "count": 24,
-        "positive": 6,
-        "neutral": 6,
-        "negative": 12
       }
     ],
     "keyIssues": [
@@ -138,6 +138,11 @@
         "example": "@Ginjarella @RupertLowe10 Oh is Trump in the room with us? You still haven't offered a shred of evidence of Trump personally taking a cut of Fifa's revenue. Fvckin British Muslim t"
       },
       {
+        "theme": "Food & Catering",
+        "count": 7,
+        "example": "@TFTranssexual We've switched up here and it might be my fault im very tired. We started at british \"food\" but we've moved to British cuisine. From where I stand something like chi"
+      },
+      {
         "theme": "Pricing",
         "count": 7,
         "example": "RT @DrSJaishankar: Pleased to call on President of the European Council @antoniolscosta alongside CIM @PiyushGoyal, MoS MEITY @JitinPrasada…"
@@ -146,11 +151,6 @@
         "theme": "Transport",
         "count": 7,
         "example": "The India-UK Comprehensive Economic &amp; Trade Agreement (CETA) covers all 12 major service sectors &amp; 137 sub-sectors, providing Indian businesses with simplified trade, stron"
-      },
-      {
-        "theme": "Food & Catering",
-        "count": 6,
-        "example": "@TFTranssexual We've switched up here and it might be my fault im very tired. We started at british \"food\" but we've moved to British cuisine. From where I stand something like chi"
       },
       {
         "theme": "Venue Size",
@@ -170,24 +170,29 @@
     ],
     "topPraises": [
       {
+        "theme": "Culture",
+        "count": 22,
+        "example": "What is the difference between London and Birmingham .... What is the difference between London and Birmingham, culture-wise?"
+      },
+      {
         "theme": "Community Spirit",
         "count": 14,
         "example": "Extremely excited for Coventry Navratri Garba 2026. The new massive venue is going to accommodate the growing community so well!"
       },
       {
         "theme": "Food & Catering",
-        "count": 9,
+        "count": 11,
         "example": "@TFTranssexual We've switched up here and it might be my fault im very tired. We started at british \"food\" but we've moved to British cuisine. From where I stand something like chi"
       },
       {
-        "theme": "Culture",
+        "theme": "Dance & Performance",
         "count": 9,
-        "example": "@Rightanglenews A controversial \"Englistan\" billboard was put up in Whitechapel, London. Whitechapel is one of London's most culturally vibrant and historically diverse districts.\n"
+        "example": "How do festivals contribute to preserving cultural heritage .... There were Indian foods, traditional dances, Indian made jewellery, traditional music. The culture creates the musi"
       },
       {
-        "theme": "Dance & Performance",
-        "count": 7,
-        "example": "It was a pleasure meeting Shri Shishir Bajoriya Ji during his short visit to London.\n\nAs a Core Committee Member of the BJP’s Foreign Affairs Department and Overseas Friends of BJP"
+        "theme": "Dhol & Music",
+        "count": 6,
+        "example": "How do festivals contribute to preserving cultural heritage .... There were Indian foods, traditional dances, Indian made jewellery, traditional music. The culture creates the musi"
       },
       {
         "theme": "Venue",
@@ -200,17 +205,26 @@
         "example": "RT @FieoHq: #FIEO in 🤝 association with the Office of DGFT (RA), Ludhiana, organised the India–UK CETA Flag-off Ceremony on 🗓️ July 15, 202…"
       },
       {
-        "theme": "Dhol & Music",
-        "count": 5,
-        "example": "An Indian Summer Festival Begins Today Our festival begins with @sitarmusicsociety's event, Cycles and Circles Evening Raag from 7:30pm - 9:30pm. Immerse yourself in an enchanting "
-      },
-      {
-        "theme": "Lights & Visuals",
+        "theme": "Tradition",
         "count": 4,
-        "example": "The upcoming Leicester Diwali Lights Switch-On 2026 drone show looks absolutely spectacular. Can't wait to see the lights on Belgrave Road!"
+        "example": "How do festivals contribute to preserving cultural heritage .... There were Indian foods, traditional dances, Indian made jewellery, traditional music. The culture creates the musi"
       }
     ],
     "topEvents": [
+      {
+        "event": "None",
+        "count": 20,
+        "positive": 0,
+        "neutral": 19,
+        "negative": 1
+      },
+      {
+        "event": "N/A",
+        "count": 6,
+        "positive": 0,
+        "neutral": 6,
+        "negative": 0
+      },
       {
         "event": "Leicester Diwali Lights Switch-On 2026",
         "count": 4,
@@ -252,20 +266,6 @@
         "positive": 1,
         "neutral": 1,
         "negative": 0
-      },
-      {
-        "event": "BRICS Trade Union Forum Summit",
-        "count": 2,
-        "positive": 0,
-        "neutral": 2,
-        "negative": 0
-      },
-      {
-        "event": "Satyanarayan Katha",
-        "count": 2,
-        "positive": 2,
-        "neutral": 0,
-        "negative": 0
       }
     ],
     "topAuthors": [
@@ -278,8 +278,20 @@
         "count": 26
       },
       {
+        "author": "Indian community Leicester UK festival culture",
+        "count": 13
+      },
+      {
         "author": "@MEAIndia",
         "count": 12
+      },
+      {
+        "author": "South Asian British Midlands events",
+        "count": 10
+      },
+      {
+        "author": "Diwali Leicester Birmingham UK experience",
+        "count": 10
       },
       {
         "author": "AISfestival",
@@ -288,25 +300,13 @@
       {
         "author": "SriBardai",
         "count": 9
-      },
-      {
-        "author": "@EclipeByDeath",
-        "count": 7
-      },
-      {
-        "author": "CentralStageCrew",
-        "count": 6
-      },
-      {
-        "author": "@Prettycinderbel",
-        "count": 5
       }
     ],
     "sentimentByDate": {
       "2026-07-15": {
-        "Positive": 17,
-        "Neutral": 32,
-        "Negative": 6
+        "Positive": 21,
+        "Neutral": 91,
+        "Negative": 9
       },
       "2026-07-14": {
         "Positive": 21,
@@ -376,30 +376,30 @@
     },
     "citySentiment": {
       "Birmingham": {
-        "Positive": 44,
-        "Neutral": 102,
-        "Negative": 71,
-        "total": 217
+        "Positive": 47,
+        "Neutral": 148,
+        "Negative": 74,
+        "total": 269
       },
       "Leicester": {
-        "Positive": 15,
-        "Neutral": 11,
+        "Positive": 16,
+        "Neutral": 18,
         "Negative": 2,
-        "total": 28
+        "total": 36
       },
       "Coventry": {
         "Positive": 4,
-        "Neutral": 0,
+        "Neutral": 4,
         "Negative": 1,
-        "total": 5
-      },
-      "Wolverhampton": {
-        "Positive": 1,
-        "Neutral": 0,
-        "Negative": 0,
-        "total": 1
+        "total": 9
       },
       "Nottingham": {
+        "Positive": 1,
+        "Neutral": 2,
+        "Negative": 0,
+        "total": 3
+      },
+      "Wolverhampton": {
         "Positive": 1,
         "Neutral": 0,
         "Negative": 0,
@@ -490,7 +490,7 @@
         "date": "2026-07-15"
       }
     ],
-    "executiveSummary": "Across 252 posts, the conversation is 26% positive, 45% neutral, and 29% negative. The main concerns residents are raising are Waste & Litter, Weather Planning, Pricing. The strongest positive feedback is around Community Spirit, Food & Catering, Culture. Most discussed events include Leicester Diwali Lights Switch-On 2026, India-UK Comprehensive Economic & Trade Agreement, Coventry Navratri Garba 2026. Top discussion cities: Birmingham (217), Leicester (28), Coventry (5)."
+    "executiveSummary": "Across 318 posts, the conversation is 22% positive, 54% neutral, and 24% negative. The main concerns residents are raising are Waste & Litter, Weather Planning, Food & Catering. The strongest positive feedback is around Culture, Community Spirit, Food & Catering. Most discussed events include None, N/A, Leicester Diwali Lights Switch-On 2026. Top discussion cities: Birmingham (269), Leicester (36), Coventry (9)."
   },
   "items": [
     {
@@ -1096,6 +1096,732 @@
       "text": "Connecting Bardai Brahmins Worldwide. Welcome to the Facebook Page of the Sri Bardai Brahmin Samaj (",
       "sentiment": "Positive",
       "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__bccaa514124a",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "General experience of Indians living in the UK",
+      "text": "What is it like for an Indian to live in the UK?. What is it like for an Indian to live in the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__803622c7eb02",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Which is the most Indian city in the UK?. Which is the most Indian city in the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__c42f5688ed5f",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "What is the difference between London and Birmingham .... What is the difference between London and Birmingham, culture-wise?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__3575e804689b",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Which cities in UK have maximum NRIs?. Which cities in UK have maximum NRIs?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__20d9a6ab629b",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "How do people of Indian descent in the UK typically .... Why do people from the UK sometimes choose not to identify with the larger UK or British identity, preferring local or cultural identities?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_UK__ac29bbd80028",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Do Indians face racism and discrimination in the UK?. Do Indians face racism and discrimination in the UK?",
+      "sentiment": "Negative",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Indian_Midlands_Diwali_5c37f0f66ed1",
+      "platform": "Quora",
+      "author": "British Indian Midlands Diwali Navratri Birmingham",
+      "date": "2026-07-15",
+      "event": "General Indian festivals abroad",
+      "text": "Which Indian festivals are celebrated abroad?. Which Indian festivals are celebrated abroad?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Indian_Midlands_Diwali_d43fcf26d624",
+      "platform": "Quora",
+      "author": "British Indian Midlands Diwali Navratri Birmingham",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "Is it hard for international students to study medicine in .... Is it hard for international students to study medicine in the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__170641bc2190",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Is there any Indian influence on British culture?. Is there any Indian influence on British culture?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__3aa468bf12d4",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Are Indians better integrated in the US or the UK?. Are Indians better integrated in the US or the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__ed30a650dcc8",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Do the British have their own culture? Why has Great .... Do the British have their own culture? Why has Great Britain been influenced by other cultures?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__a4671e05c076",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Do Indian people culturally inherit more from British or .... Do Indian people culturally inherit more from British or from their own traditions?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__c8e927f9c972",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "General UK festivals",
+      "text": "What are the main festivals celebrated around the UK?. What are the main festivals celebrated around the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__226a26c40ca9",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "Indian cultural festival",
+      "text": "How do festivals contribute to preserving cultural heritage .... There were Indian foods, traditional dances, Indian made jewellery, traditional music. The culture creates the music, dress, dance, food …",
+      "sentiment": "Positive",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__6fdccd4014f4",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "I am from India. I am going to the UK first time away .... I am from India. I am going to the UK first time away from the family. I am probably going to Manchester, Leeds or London. What tips would you give to",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__96c34e77ddcb",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "General festival inquiry",
+      "text": "What is a unique festival which is celebrated only in your .... What is a unique festival which is celebrated only in your country and the rest of the world does not know much about it?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_UK__fc5e1c069102",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Can you suggest some unique places to visit in the UK for .... Leicester was home to the largest Indian population, with 6.6% of all Indian people living there, followed by Birmingham (4.6%) and Harrow (4.5",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_3dca06c11bde",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "How are South Asian immigrants perceived in the UK .... How are South Asian immigrants perceived in the UK compared to Eastern Europeans?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_04cae720f760",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "What do the British think about South Asian immigrants in .... What do the British think about South Asian immigrants in the UK (regardless of the generation)?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_da5690127c16",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "How are South Asian immigrants treated in Europe?. How are South Asian immigrants treated in Europe?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_e94d48eead71",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Me and my sister have recently done an Ancestry DNA test .... Me and my sister have recently done an Ancestry DNA test, we’re of south Asian descent and surprisingly my results identified me as 13.6% Irish, Scottish",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_68a83e26b9a2",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "Birmingham Balti Association",
+      "text": "Is it true that Indian, East Asian, and Eastern European .... British curry has evolved well beyond its South Asian homeland to the point where there exists a Birmingham Balti Association",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_adab8ac9acc6",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Why are there so few East Asians with British accents (any .... Why are there so few East Asians with British accents (any of the many in Britain)?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_e7d8148a05e2",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "Bollywood movies in 1980s England",
+      "text": "Were Bollywood movies being shown in England in the .... Were Bollywood movies being shown in England in the 1980s? Perhaps in some South Asian diasporic communities in London, etc.?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_e_9ac2ac5a06ef",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Why would you (not) move to Birmingham, UK? Which .... Why would you (not) move to Birmingham, UK? Which other British cities would you recommend?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham_UK_0254d466016d",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Living in Leicester",
+      "text": "What are some positive sides to living in Leicester, UK?. What are some positive sides to living in Leicester, UK?",
+      "sentiment": "Positive",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham_UK_db37e0e45317",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Which city in England is better to live in, Birmingham .... Which city in England is better to live in, Birmingham or Leicester?",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham_UK_34ccee7cf9f2",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "Where are you from in the UK? Do you live in Leicester?. Where are you from in the UK? Do you live in Leicester?",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham_UK_bcf5ce54369f",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "None",
+      "text": "What's the best thing about living in Birmingham, UK?. What’s the best thing about living in Birmingham, UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham_UK_6dc57f5a8f4d",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Living in the best areas in Leicester",
+      "text": "How is it to live in the best areas in Leicester?. How is it to live in the best areas in Leicester?",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_U_a10354535611",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "General discussion on Indian life in the UK",
+      "text": "How is Indian life in the United Kingdom?. How is Indian life in the United Kingdom?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_U_0998bee5ee0b",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "Discussion on Indian food quality in the UK",
+      "text": "Does the UK have better Indian food than India itself?. Does the UK have better Indian food than India itself?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_diaspora_Birmingham_U_eccae3f6fb85",
+      "platform": "Quora",
+      "author": "Indian diaspora Birmingham UK community events",
+      "date": "2026-07-15",
+      "event": "Comparison of emigrating to the UK vs the US",
+      "text": "For an Indian, is it better to emigrate to the UK or to the US?. For an Indian, is it better to emigrate to the UK or to the US?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_U_1ad1ad1e6bae",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "General inquiry about yearly cultural events",
+      "text": "What is your favorite yearly cultural event?. What is your favorite yearly cultural event?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_U_086a15e729a3",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "Janmashtami celebration",
+      "text": "What cultural festivals or traditions from different parts of .... Janam means Birth and Ashtami means eight- symbolising the birth of Lord Krishna on the eighth day of the fortnight of the new moon in the Hindu",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_U_254277d49d6d",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "Cultural Festivals and Intercultural Dialogue",
+      "text": "How does performing or organizing cultural festivals help .... Cultural Festivals promote Intercultural dialogue, exchange, and mutual learning, it fosters cultural understanding and acceptance, and it",
+      "sentiment": "Positive",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_78dda9fcc730",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "What place in America is like Birmingham, UK? I'm talking .... What place in America is like Birmingham, UK? I’m talking about urban culture and hoods",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham__9ac2ac5a06ef",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Discussion on moving to Birmingham",
+      "text": "Why would you (not) move to Birmingham, UK? Which .... Why would you (not) move to Birmingham, UK? Which other British cities would you recommend?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__019d4276633d",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Sikh community welfare and values",
+      "text": "What are examples of Sikh communities across the world .... WELFARE - larger Sikh gurdwaras offer free hot meals to all. PEACE - Sikhs are peaceful but allowed to defend themselves",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_51a89179302e",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "Discussion on British Midlands regional identity",
+      "text": "Would you argue the British Midlands are viewed as just an .... Would you argue the British Midlands are viewed as just an extension of the 'North' in terms of poverty, regional dialects, and social issues? Many Brummies",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_community_Leicester_U_2909f35a80c9",
+      "platform": "Quora",
+      "author": "Indian community Leicester UK festival culture",
+      "date": "2026-07-15",
+      "event": "Discussion on the impact of multiculturalism on British culture",
+      "text": "What has been lost from British culture as a result of .... What has been lost from British culture as a result of multiculturalism?",
+      "sentiment": "Negative",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_South_Asian_British_Midlands_803622c7eb02",
+      "platform": "Quora",
+      "author": "South Asian British Midlands events",
+      "date": "2026-07-15",
+      "event": "Discussion on most Indian city in the UK",
+      "text": "Which is the most Indian city in the UK?. Which is the most Indian city in the UK?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham__4e16ef4b44ca",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Living in Leicester, UK",
+      "text": "How does it mean to live in Leicester, UK?. How does it mean to live in Leicester, UK?",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham__25a1b5c74704",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Living expenses inquiry",
+      "text": "How much are the living expenses in Leicester, UK? I am .... How much are the living expenses in Leicester, UK? I am coming in September as a student with my wife",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham__d445330017eb",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "General inquiry about living in Leicester",
+      "text": "What are the best aspects of living in Leicester as a young .... What are the best aspects of living in Leicester as a young adult?",
+      "sentiment": "Neutral",
+      "city": "Leicester",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Diwali_Leicester_Birmingham__8cb6bca55465",
+      "platform": "Quora",
+      "author": "Diwali Leicester Birmingham UK experience",
+      "date": "2026-07-15",
+      "event": "Living in Birmingham",
+      "text": "What are some positive sides to living in Birmingham, UK?. What are some positive sides to living in Birmingham, UK?",
+      "sentiment": "Positive",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__390b7632e832",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "General inquiry regarding Punjabi diaspora demographics in the UK",
+      "text": "Where do most Punjabis from India and Pakistan currently .... Where do most Punjabis from India and Pakistan currently reside in the United Kingdom?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__491386bc5fe6",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Discussion on North vs South Indian diaspora origins",
+      "text": "Are most Indian diasporas in the UK from North or South .... Are most Indian diasporas in the UK from North or South India?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__7e1e72461e20",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Discussion on Punjabi diaspora social dynamics",
+      "text": "Do overseas Punjabis from India and Pakistan like to get .... Do overseas Punjabis from India and Pakistan like to get along and hang out with each other in Britain, the USA and other countries?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__6a85a8c82aa5",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "In which part of India did Hinduism emerge? Was it Punjab?. In which part of India did Hinduism emerge? Was it Punjab?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__ff9aecc714e7",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "If Sikhs had thier own country like other religions, Would .... If Sikhs had thier own country like other religions, Would they have faced less problems in foreign countries and been more successful?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__141b74f0bf8c",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Learning Punjabi for Hindi speakers",
+      "text": "How long would it take me to learn Punjabi if I am good at .... How long would it take me to learn Punjabi if I am good at speaking Hindi?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__075df9b41085",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Historical discussion on Sikh involvement in World Wars",
+      "text": "Why did Sikhs fight alongside the British rather than .... Why did Sikhs fight alongside the British rather than against them in World Wars?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_British_Sikh_Hindu_Gujarati__ede55c924278",
+      "platform": "Quora",
+      "author": "British Sikh Hindu Gujarati Punjabi Midlands community",
+      "date": "2026-07-15",
+      "event": "Discussion on balancing British and Indian cultural identities",
+      "text": "How do people of Indian descent in the UK typically .... How do people of Indian descent in the UK typically balance their British and Indian cultural identities? All related (31)",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Navratri_Garba_UK_Birmingham_edbdc19f8e7c",
+      "platform": "Quora",
+      "author": "Navratri Garba UK Birmingham Leicester",
+      "date": "2026-07-15",
+      "event": "Discussion on the future of Gujarati literature",
+      "text": "Is Gujarati literature dying? Or why does .... Is Gujarati literature dying? Or why does Gujarati literature need to reach out to the twenty-first century?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Navratri_Garba_UK_Birmingham_9f55522fc0e3",
+      "platform": "Quora",
+      "author": "Navratri Garba UK Birmingham Leicester",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "As a Gujarati, I would like to know how Gujarati is faring .... As a Gujarati, I would like to know how Gujarati is faring in Pakistan? How are the language and culture preserved in Pakistan?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Navratri_Garba_UK_Birmingham_e2375b571113",
+      "platform": "Quora",
+      "author": "Navratri Garba UK Birmingham Leicester",
+      "date": "2026-07-15",
+      "event": "Discussion on Gujarati language popularity",
+      "text": "Why has the Gujarati language lost popularity?. Why has the Gujarati language lost popularity?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Navratri_Garba_UK_Birmingham_22b25725e69e",
+      "platform": "Quora",
+      "author": "Navratri Garba UK Birmingham Leicester",
+      "date": "2026-07-15",
+      "event": "Navratri Festival",
+      "text": "What are the most interesting facts about the Sammakka .... Navratri is celebrated as a Hindu festival of worship and dance from 10th to 18th October. Meaning 'nine nights',",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": true
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_a0282f66fff9",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "Choosing a city for residence",
+      "text": "If you had to choose between Manchester, Newcastle .... If you had to choose between Manchester, Newcastle, Brighton, Bristol, Liverpool, Birmingham, Coventry and Nottingham which option would you get and why?",
+      "sentiment": "Neutral",
+      "city": "Coventry",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_ac29bbd80028",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "Discussion on racism and discrimination against Indians in the UK",
+      "text": "Do Indians face racism and discrimination in the UK?. Do Indians face racism and discrimination in the UK?",
+      "sentiment": "Negative",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_b8b0c943d8d6",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "Moving to Coventry advice",
+      "text": "I'm moving to Coventry, UK in 2 days. What are some tips .... I’m moving to Coventry, UK in 2 days. What are some tips you have for me?",
+      "sentiment": "Neutral",
+      "city": "Coventry",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_c43c9d739a56",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "General inquiry about living in Nottingham",
+      "text": "What is it like to live in Nottingham England?. What is it like to live in Nottingham England?",
+      "sentiment": "Neutral",
+      "city": "Nottingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_ea2d653c5769",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "General inquiry about living in Coventry",
+      "text": "What is it like living in Coventry?. What is it like living in Coventry?",
+      "sentiment": "Neutral",
+      "city": "Coventry",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_b7eb515cd1c2",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "N/A",
+      "text": "Which British city outside of London has the highest Indian .... Which British city outside of London has the highest Indian population?",
+      "sentiment": "Neutral",
+      "city": "Birmingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_4dd4517cdf6f",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "MBA program selection for Indian aspirant",
+      "text": "Which is the best option out of Birmingham, Nottingham .... Which is the best option out of Birmingham, Nottingham, Edinburgh, Liverpool, Southampton, and Sheffield for a full-time MBA? I am an Indian aspirant",
+      "sentiment": "Neutral",
+      "city": "Nottingham",
+      "isUpcoming": false
+    },
+    {
+      "id": "quora_Indian_culture_UK_Birmingham_d69fd136fac1",
+      "platform": "Quora",
+      "author": "Indian culture UK Birmingham Coventry Nottingham",
+      "date": "2026-07-15",
+      "event": "PhD study at University of Warwick",
+      "text": "I am an Indian. I might join the University Of Warwick .... I am an Indian. I might join the University Of Warwick, Coventry, the UK for a PhD study. I might receive a stipend of 1200 pounds per month and my spouse",
+      "sentiment": "Neutral",
+      "city": "Coventry",
       "isUpcoming": false
     },
     {
