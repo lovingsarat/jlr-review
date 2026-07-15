@@ -129,7 +129,9 @@ def analyze_with_gemini(text: str) -> dict:
     )
     prompt = (
         f'Analyze this Quora post about Indian diaspora events in UK Midlands. '
-        f'Return JSON with: "sentiment" (Positive/Neutral/Negative), '
+        f'Return JSON with: "sentiment" (Positive/Neutral/Negative. '
+        f'Be strict when classifying as Negative: only use Negative for significant complaints or safety issues. '
+        f'Be lenient when classifying as Positive: use Positive for general satisfaction, community pride, or appreciation instead of Neutral), '
         f'"city" (Birmingham/Leicester/Coventry/Nottingham/Wolverhampton, default Birmingham), '
         f'"isUpcoming" (bool), "event" (short title max 80 chars), '
         f'"priority_score" (integer 1 to 5), '

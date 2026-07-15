@@ -753,6 +753,9 @@ function App() {
                   </svg>
                   Priority Indicators
                 </h3>
+                <p style={{ margin: 0, fontSize: "0.75rem", color: "#6b7280", fontStyle: "italic" }}>
+                  *Star priority scores are AI-generated based on sentiment analysis (not actual user ratings).
+                </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px", maxHeight: "350px", overflowY: "auto" }}>
                   {allItems.filter(item => (item.priority_score || 1) >= 4).slice(0, 4).map((item) => (
                     <div key={item.id} style={{
@@ -1073,13 +1076,14 @@ function App() {
                       )}
 
                       {item.priority_score > 1 && (
-                        <span className="priority-badge" style={{
+                        <span className="priority-badge" title="AI-Generated Priority (Not actual user rating)" style={{
                           padding: "2px 8px",
                           fontSize: "0.7rem",
                           fontWeight: "bold",
                           borderRadius: "12px",
                           backgroundColor: item.priority_score >= 4 ? "rgba(239, 68, 68, 0.12)" : "rgba(245, 158, 11, 0.12)",
-                          color: item.priority_score >= 4 ? "#dc2626" : "#d97706"
+                          color: item.priority_score >= 4 ? "#dc2626" : "#d97706",
+                          cursor: "help"
                         }}>
                           {"★".repeat(item.priority_score)}
                         </span>

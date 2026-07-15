@@ -111,6 +111,8 @@ def analyze_with_gemini(text):
     Analyze the following social media post regarding Indian diaspora community events in the UK Midlands.
     Extract the following information in strict JSON format:
     1. "sentiment": must be one of "Positive", "Neutral", "Negative".
+       - NOTE: Be strict when classifying content as "Negative" (only classify as Negative if there is explicit, significant complaint, logistical failure or safety issues).
+       - NOTE: Be lenient when classifying content as "Positive" (if it expresses general satisfaction, constructive optimism, community pride, or simple appreciation, classify it as Positive instead of Neutral).
     2. "city": must be the UK Midlands city mentioned (e.g., "Birmingham", "Leicester", "Coventry", "Nottingham", "Wolverhampton"). If none is mentioned, default to "Birmingham".
     3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity.
     4. "event": a short title for the event or topic (max 80 chars).
