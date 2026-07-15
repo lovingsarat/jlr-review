@@ -813,6 +813,7 @@ function App() {
           <div className="tab-content insights-tab fade-in">
             <InsightsTab
               analytics={analytics}
+              stats={stats}
               onTrendClick={(term) => {
                 setSearchQuery(term);
                 setActiveTab("explorer");
@@ -967,7 +968,7 @@ function App() {
                 <span className="filter-label">Theme Tags:</span>
                 <div className="filter-options flex-wrap">
                   <button className={`filter-btn sec ${selectedCategory === null ? "active" : ""}`} onClick={() => setSelectedCategory(null)}>All</button>
-                  {["Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General"].map(cat => (
+                  {["Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "India Passport", "India Visa", "Visa Appointment", "OCI Card", "General"].map(cat => (
                     <button key={cat} className={`filter-btn sec ${selectedCategory === cat ? "active" : ""}`} onClick={() => setSelectedCategory(cat)}>{cat}</button>
                   ))}
                 </div>
@@ -1119,7 +1120,7 @@ function PlatformBar({ label, count, total, color }) {
   );
 }
 
-function InsightsTab({ analytics, onTrendClick }) {
+function InsightsTab({ analytics, stats, onTrendClick }) {
   if (!analytics) {
     return (
       <div className="insights-loading">
@@ -1163,9 +1164,84 @@ function InsightsTab({ analytics, onTrendClick }) {
         <p>{analytics.executiveSummary}</p>
       </section>
 
-      <section className="metrics-card">
-        <h3>Sentiment Timeline</h3>
-        <SentimentTimeline data={sentimentByDate} />
+      <section className="metrics-card consolidated-sentiment-card">
+        <div className="consolidated-header">
+          <div>
+            <h3>Consolidated Sentiment Analysis</h3>
+            <p className="consolidated-subtitle">Overall distribution across all {stats?.totalFeedbackCount || 0} feedback items</p>
+          </div>
+          <div className="health-index-badge">
+            <span className="health-lbl">Sentiment Health Index</span>
+            <span className="health-val">{Math.round((stats?.sentimentPercentages?.Positive || 0) + 0.5 * (stats?.sentimentPercentages?.Neutral || 0))}/100</span>
+          </div>
+        </div>
+
+        {/* Stacked Proportional Bar */}
+        <div className="sentiment-stacked-bar">
+          {(stats?.sentimentPercentages?.Positive || 0) > 0 && (
+            <div 
+              className="stacked-bar-segment positive-segment" 
+              style={{ width: `${stats.sentimentPercentages.Positive}%` }}
+              title={`Positive: ${stats.sentimentPercentages.Positive}%`}
+            >
+              <span>{Math.round(stats.sentimentPercentages.Positive)}%</span>
+            </div>
+          )}
+          {(stats?.sentimentPercentages?.Neutral || 0) > 0 && (
+            <div 
+              className="stacked-bar-segment neutral-segment" 
+              style={{ width: `${stats.sentimentPercentages.Neutral}%` }}
+              title={`Neutral: ${stats.sentimentPercentages.Neutral}%`}
+            >
+              <span>{Math.round(stats.sentimentPercentages.Neutral)}%</span>
+            </div>
+          )}
+          {(stats?.sentimentPercentages?.Negative || 0) > 0 && (
+            <div 
+              className="stacked-bar-segment negative-segment" 
+              style={{ width: `${stats.sentimentPercentages.Negative}%` }}
+              title={`Negative: ${stats.sentimentPercentages.Negative}%`}
+            >
+              <span>{Math.round(stats.sentimentPercentages.Negative)}%</span>
+            </div>
+          )}
+        </div>
+
+        {/* Stat Cards Grid */}
+        <div className="sentiment-stat-cards-grid">
+          <div className="sentiment-stat-card pos-card">
+            <div className="stat-card-header">
+              <span className="dot pos-dot"></span>
+              <span className="stat-card-title">Positive</span>
+            </div>
+            <div className="stat-card-value">
+              {Math.round(((stats?.sentimentPercentages?.Positive || 0) / 100) * (stats?.totalFeedbackCount || 0))} <span className="stat-card-pct">({Math.round(stats?.sentimentPercentages?.Positive || 0)}%)</span>
+            </div>
+            <p className="stat-card-desc">Constructive optimism, community satisfaction, and appreciation.</p>
+          </div>
+
+          <div className="sentiment-stat-card neu-card">
+            <div className="stat-card-header">
+              <span className="dot neu-dot"></span>
+              <span className="stat-card-title">Neutral</span>
+            </div>
+            <div className="stat-card-value">
+              {Math.round(((stats?.sentimentPercentages?.Neutral || 0) / 100) * (stats?.totalFeedbackCount || 0))} <span className="stat-card-pct">({Math.round(stats?.sentimentPercentages?.Neutral || 0)}%)</span>
+            </div>
+            <p className="stat-card-desc">General inquiries, news sharing, announcements, and balanced reviews.</p>
+          </div>
+
+          <div className="sentiment-stat-card neg-card">
+            <div className="stat-card-header">
+              <span className="dot neg-dot"></span>
+              <span className="stat-card-title">Negative</span>
+            </div>
+            <div className="stat-card-value">
+              {(stats?.totalFeedbackCount || 0) - Math.round(((stats?.sentimentPercentages?.Positive || 0) / 100) * (stats?.totalFeedbackCount || 0)) - Math.round(((stats?.sentimentPercentages?.Neutral || 0) / 100) * (stats?.totalFeedbackCount || 0))} <span className="stat-card-pct">({Math.round(stats?.sentimentPercentages?.Negative || 0)}%)</span>
+            </div>
+            <p className="stat-card-desc">Explicit logistical complaints, event delays, pricing concerns, or crowd issues.</p>
+          </div>
+        </div>
       </section>
 
       <div className="insights-grid-2">

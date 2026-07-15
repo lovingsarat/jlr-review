@@ -86,7 +86,8 @@ def is_uk_relevant(text, page):
         "hindu", "sikh", "gujarati", "punjabi", "bollywood", "samaj", "mandir",
         "temple", "festival", "community event", "cultural", "katha", "patotsav",
         "satsang", "puja", "havan", "british hindu", "crew", "events", "stage",
-        "central", "shivam", "bardai", "summer", "square", "leicester"
+        "central", "shivam", "bardai", "summer", "square", "leicester",
+        "passport", "visa", "oci", "oci card", "consular"
     ]
     if page in PAGE_KEYWORDS:
         uk_keywords = list(set(uk_keywords + PAGE_KEYWORDS[page]))
@@ -117,7 +118,7 @@ def analyze_with_gemini(text):
     3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity.
     4. "event": a short title for the event or topic (max 80 chars).
     5. "priority_score": integer from 1 to 5 indicating severity/importance (1 = low priority/general, 5 = high priority/critical issue).
-    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General".
+    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "India Passport", "India Visa", "Visa Appointment", "OCI Card", "General".
     7. "action_insight": single-sentence actionable recommendation for event organizers.
 
     Post text: "{text[:500]}"

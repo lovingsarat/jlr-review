@@ -42,6 +42,10 @@ SERPER_QUERIES = [
     "site:quora.com British Sikh Hindu Gujarati Punjabi Midlands community",
     "site:quora.com Navratri Garba UK Birmingham Leicester",
     "site:quora.com Indian culture UK Birmingham Coventry Nottingham",
+    "site:quora.com India passport Birmingham Leicester UK",
+    "site:quora.com India Visa appointment Midlands UK",
+    "site:quora.com OCI Card application UK Midlands",
+    "site:quora.com Indian consular services UK Birmingham Leicester",
 ]
 
 UK_KEYWORDS = [
@@ -51,6 +55,7 @@ UK_KEYWORDS = [
     "diwali", "hindu", "sikh", "gujarati", "punjabi", "bollywood", "samaj",
     "mandir", "temple", "festival", "community event", "cultural", "south asian",
     "british indian", "british asian", "mela", "vaisakhi", "holi", "bhangra",
+    "passport", "visa", "oci", "oci card", "consular"
 ]
 
 NOISE_SUBSTRINGS = (
@@ -135,7 +140,7 @@ def analyze_with_gemini(text: str) -> dict:
         f'"city" (Birmingham/Leicester/Coventry/Nottingham/Wolverhampton, default Birmingham), '
         f'"isUpcoming" (bool), "event" (short title max 80 chars), '
         f'"priority_score" (integer 1 to 5), '
-        f'"category_tag" ("Transport"/"Facilities"/"Pricing"/"Stalls & Food"/"Safety & Crowd"/"Culture & Music"/"Ticketing"/"General"), '
+        f'"category_tag" ("Transport"/"Facilities"/"Pricing"/"Stalls & Food"/"Safety & Crowd"/"Culture & Music"/"Ticketing"/"India Passport"/"India Visa"/"Visa Appointment"/"OCI Card"/"General"), '
         f'"action_insight" (single-sentence recommendation). '
         f'JSON only.\n\nText: "{text[:400]}"'
     )

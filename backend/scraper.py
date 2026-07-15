@@ -125,7 +125,7 @@ def analyze_tweet_with_gemini(text: str) -> dict:
     3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity (rather than a past retrospective event).
     4. "event": a concise, capitalized name for the event referenced (e.g. "Leicester Diwali Lights Switch-On 2026", "Midlands Holi Festival 2026", or "General Community Feedback 2026").
     5. "priority_score": integer from 1 to 5 indicating the severity, urgency or importance of the issue/feedback raised (1 = minor/general chat, 5 = critical logistical failure, safety concern, or highly important feedback).
-    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General".
+    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "India Passport", "India Visa", "Visa Appointment", "OCI Card", "General".
     7. "action_insight": a single sentence with a constructive, actionable recommendation for organizers based on this post (e.g., "Provide park-and-ride shuttles to reduce traffic congestion", "Offer student ticket discounts to increase accessibility"). If general praise, suggest how to maintain the quality.
     
     Post Text:
@@ -255,7 +255,8 @@ UK_KEYWORDS = [
     "uk", "england", "britain", "british", "birmingham", "leicester", "coventry",
     "wolverhampton", "nottingham", "derby", "west midlands", "east midlands",
     "midlands", "manchester", "london", "bradford", "luton", "slough",
-    "nhs", "council", "mp ", "parliament", "whitehall", "home office"
+    "nhs", "council", "mp ", "parliament", "whitehall", "home office",
+    "passport", "visa", "oci", "oci card", "consular"
 ]
 
 def is_uk_relevant(text: str) -> bool:
@@ -269,6 +270,7 @@ async def run_official_api_scraper(bearer_token: str):
     queries = {
         "diaspora_community":   f'{UK_CITIES} ("British Indian" OR "British Asian" OR "South Asian" OR "Desi community") lang:en -is:retweet',
         "cultural_events":      f'{UK_CITIES} ("Diwali" OR "Navratri" OR "Vaisakhi" OR "Holi" OR "Eid" OR "Mela") lang:en -is:retweet',
+        "consular_services":    f'{UK_CITIES} ("India passport" OR "India Visa" OR "Visa Appointment" OR "OCI Card" OR "OCI appointment" OR "consular") lang:en -is:retweet',
     }
     
     total_added = 0
@@ -357,6 +359,7 @@ async def run_twikit_scraper():
         "cultural_events":      f'({UK_CITIES}) ("Diwali" OR "Navratri" OR "Vaisakhi" OR "Holi" OR "Eid" OR "Mela" OR "Garba") lang:en -is:retweet',
         "local_issues":         f'({UK_CITIES}) ("Indian community" OR "Asian community" OR "South Asian") ("council" OR "MP" OR "police" OR "NHS" OR "mosque" OR "temple" OR "gurdwara") lang:en -is:retweet',
         "diaspora_news":        f'({UK_CITIES}) ("British Indian" OR "British Pakistani" OR "British Bangladeshi" OR "British Sikh" OR "British Hindu" OR "British Muslim") lang:en -is:retweet',
+        "consular_services":    f'({UK_CITIES}) ("India passport" OR "India Visa" OR "Visa Appointment" OR "OCI Card" OR "OCI appointment" OR "consular") lang:en -is:retweet',
     }
     
     total_added = 0

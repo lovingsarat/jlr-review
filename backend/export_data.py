@@ -78,6 +78,11 @@ ISSUE_KEYWORDS = {
     "shuttle": "Transport",
     "noise": "Noise",
     "noisy": "Noise",
+    "passport": "India Passport",
+    "visa": "India Visa",
+    "appointment": "Visa Appointment",
+    "slot": "Visa Appointment",
+    "oci": "OCI Card",
 }
 
 PRAISE_KEYWORDS = {
@@ -110,6 +115,11 @@ PRAISE_KEYWORDS = {
     "welcoming": "Inclusivity",
     "nostalgia": "Tradition",
     "traditional": "Tradition",
+    "passport": "India Passport",
+    "visa": "India Visa",
+    "appointment": "Visa Appointment",
+    "slot": "Visa Appointment",
+    "oci": "OCI Card",
 }
 
 CITY_ALIASES = {

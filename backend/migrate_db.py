@@ -19,13 +19,22 @@ def migrate():
     cursor.execute("SELECT id, text, sentiment, event FROM feedback_items")
     rows = cursor.fetchall()
     
-    categories = ["Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing"]
+    categories = ["Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "India Passport", "India Visa", "Visa Appointment", "OCI Card"]
     
     for row_id, text, sentiment, event in rows:
         # Determine category based on keywords
         text_l = text.lower()
         cat = "General"
-        if any(w in text_l for w in ["parking", "bus", "shuttle", "traffic", "road", "train"]):
+        if any(w in text_l for w in ["passport"]):
+            cat = "India Passport"
+        elif any(w in text_l for w in ["oci"]):
+            cat = "OCI Card"
+        elif "visa" in text_l:
+            if any(w in text_l for w in ["appointment", "slot", "booking", "schedule"]):
+                cat = "Visa Appointment"
+            else:
+                cat = "India Visa"
+        elif any(w in text_l for w in ["parking", "bus", "shuttle", "traffic", "road", "train"]):
             cat = "Transport"
         elif any(w in text_l for w in ["ticket", "price", "expensive", "cost", "resell", "scalp"]):
             cat = "Pricing" if "expensive" in text_l else "Ticketing"
