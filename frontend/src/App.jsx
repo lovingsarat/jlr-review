@@ -183,6 +183,7 @@ function App() {
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedSentiment, setSelectedSentiment] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [allItems, setAllItems] = useState([]);
   const [feedItems, setFeedItems] = useState(STATIC_FEEDBACK_ITEMS);
@@ -324,6 +325,9 @@ function App() {
     if (selectedCity) {
       filtered = filtered.filter((item) => item.city === selectedCity);
     }
+    if (selectedCategory) {
+      filtered = filtered.filter((item) => item.category_tag === selectedCategory);
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -334,7 +338,7 @@ function App() {
       );
     }
     setFeedItems(filtered);
-  }, [searchQuery, selectedPlatform, selectedSentiment, selectedCity, allItems]);
+  }, [searchQuery, selectedPlatform, selectedSentiment, selectedCity, selectedCategory, allItems]);
 
   // Scroll to bottom of chat
   useEffect(() => {
@@ -348,6 +352,7 @@ function App() {
     setSelectedPlatform(null);
     setSelectedSentiment(null);
     setSelectedCity(null);
+    setSelectedCategory(null);
   };
 
   const buildChatContext = (query, items, limit = 8) => {
@@ -736,6 +741,67 @@ function App() {
                 </div>
               </section>
             </div>
+
+            {/* Priority Panel & Action Plan Split */}
+            <div className="dashboard-insights-grid" style={{ marginTop: "24px" }}>
+              <section className="metrics-card insights-card" style={{ flex: 1.2 }}>
+                <h3>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#dc2626", marginRight: "8px" }}>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  Priority Indicators
+                </h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px", maxHeight: "350px", overflowY: "auto" }}>
+                  {allItems.filter(item => (item.priority_score || 1) >= 4).slice(0, 4).map((item) => (
+                    <div key={item.id} style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(239, 68, 68, 0.05)",
+                      border: "1px solid rgba(239, 68, 68, 0.15)",
+                      borderLeft: "4px solid #ef4444"
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", fontSize: "0.8rem" }}>
+                        <strong style={{ color: "#b91c1c" }}>{item.author} ({item.platform})</strong>
+                        <span style={{ color: "#dc2626", fontWeight: "bold" }}>{"★".repeat(item.priority_score)}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "0.85rem", color: "#374151" }}>{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="metrics-card insights-card" style={{ flex: 1 }}>
+                <h3>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#10b981", marginRight: "8px" }}>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  Actionable Insights
+                </h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px", maxHeight: "350px", overflowY: "auto" }}>
+                  {allItems.filter(item => item.action_insight && item.action_insight !== "No recommendation." && (item.priority_score || 1) >= 3).slice(0, 4).map((item) => (
+                    <div key={item.id} style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(16, 185, 129, 0.05)",
+                      border: "1px solid rgba(16, 185, 129, 0.15)",
+                      borderLeft: "4px solid #10b981"
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", fontSize: "0.8rem" }}>
+                        <span style={{ fontWeight: "600", color: "#065f46" }}>Theme: {item.category_tag}</span>
+                        <span style={{ color: "#6b7280" }}>{item.city}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "0.85rem", fontStyle: "italic", color: "#047857" }}>
+                        "{item.action_insight}"
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
         )}
 
@@ -893,12 +959,22 @@ function App() {
                   <button className={`filter-btn sec ${selectedCity === "Nottingham" ? "active" : ""}`} onClick={() => setSelectedCity("Nottingham")}>Nottingham</button>
                 </div>
               </div>
+
+              <div className="filter-group">
+                <span className="filter-label">Theme Tags:</span>
+                <div className="filter-options flex-wrap">
+                  <button className={`filter-btn sec ${selectedCategory === null ? "active" : ""}`} onClick={() => setSelectedCategory(null)}>All</button>
+                  {["Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General"].map(cat => (
+                    <button key={cat} className={`filter-btn sec ${selectedCategory === cat ? "active" : ""}`} onClick={() => setSelectedCategory(cat)}>{cat}</button>
+                  ))}
+                </div>
+              </div>
             </section>
 
             {/* Results header */}
             <div className="explorer-results-header">
               <span className="results-count">{feedItems.length} Feed items matched</span>
-              {(selectedPlatform || selectedSentiment || selectedCity || searchQuery) && (
+              {(selectedPlatform || selectedSentiment || selectedCity || selectedCategory || searchQuery) && (
                 <button className="clear-filters-link" onClick={handleClearFilters}>
                   Clear filters
                 </button>
@@ -958,8 +1034,24 @@ function App() {
 
                     <p className="card-text">{item.text}</p>
 
-                    <div className="card-bottom-row">
-                      <div className="city-tag">
+                    {item.action_insight && item.action_insight !== "No recommendation." && (
+                      <div className="card-insight-box" style={{
+                        marginTop: "10px",
+                        marginBottom: "10px",
+                        padding: "8px 12px",
+                        fontSize: "0.8rem",
+                        borderRadius: "6px",
+                        backgroundColor: "rgba(16, 185, 129, 0.08)",
+                        borderLeft: "3px solid #10b981",
+                        color: "#047857",
+                        fontStyle: "italic"
+                      }}>
+                        💡 suggestion: {item.action_insight}
+                      </div>
+                    )}
+
+                    <div className="card-bottom-row" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div className="city-tag" style={{ display: "flex", alignItems: "center" }}>
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="location-icon">
                           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                           <circle cx="12" cy="10" r="3" />
@@ -967,7 +1059,33 @@ function App() {
                         {item.city}
                       </div>
 
-                      <span className={`sentiment-badge ${item.sentiment.toLowerCase()}`}>
+                      {item.category_tag && item.category_tag !== "General" && (
+                        <span className="category-tag" style={{
+                          padding: "2px 8px",
+                          fontSize: "0.7rem",
+                          fontWeight: "600",
+                          borderRadius: "12px",
+                          backgroundColor: "rgba(99, 102, 241, 0.12)",
+                          color: "#4f46e5"
+                        }}>
+                          #{item.category_tag}
+                        </span>
+                      )}
+
+                      {item.priority_score > 1 && (
+                        <span className="priority-badge" style={{
+                          padding: "2px 8px",
+                          fontSize: "0.7rem",
+                          fontWeight: "bold",
+                          borderRadius: "12px",
+                          backgroundColor: item.priority_score >= 4 ? "rgba(239, 68, 68, 0.12)" : "rgba(245, 158, 11, 0.12)",
+                          color: item.priority_score >= 4 ? "#dc2626" : "#d97706"
+                        }}>
+                          {"★".repeat(item.priority_score)}
+                        </span>
+                      )}
+
+                      <span className={`sentiment-badge ${item.sentiment.toLowerCase()}`} style={{ marginLeft: "auto" }}>
                         {item.sentiment.toUpperCase()}
                       </span>
                     </div>

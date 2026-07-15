@@ -95,7 +95,15 @@ def is_uk_relevant(text, page):
 def analyze_with_gemini(text):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key in ["MY_GEMINI_API_KEY", "YOUR_GEMINI_API_KEY"]:
-        return {"sentiment": "Neutral", "city": "Birmingham", "isUpcoming": False, "event": "Community Event"}
+        return {
+            "sentiment": "Neutral",
+            "city": "Birmingham",
+            "isUpcoming": False,
+            "event": "Community Event",
+            "priority_score": 1,
+            "category_tag": "General",
+            "action_insight": "No recommendation."
+        }
 
     import httpx
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={api_key}"
@@ -106,6 +114,9 @@ def analyze_with_gemini(text):
     2. "city": must be the UK Midlands city mentioned (e.g., "Birmingham", "Leicester", "Coventry", "Nottingham", "Wolverhampton"). If none is mentioned, default to "Birmingham".
     3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity.
     4. "event": a short title for the event or topic (max 80 chars).
+    5. "priority_score": integer from 1 to 5 indicating severity/importance (1 = low priority/general, 5 = high priority/critical issue).
+    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General".
+    7. "action_insight": single-sentence actionable recommendation for event organizers.
 
     Post text: "{text[:500]}"
 
@@ -127,7 +138,15 @@ def analyze_with_gemini(text):
     except Exception as e:
         print(f"Error analyzing with Gemini: {e}")
 
-    return {"sentiment": "Neutral", "city": "Birmingham", "isUpcoming": False, "event": "Community Event"}
+    return {
+        "sentiment": "Neutral",
+        "city": "Birmingham",
+        "isUpcoming": False,
+        "event": "Community Event",
+        "priority_score": 1,
+        "category_tag": "General",
+        "action_insight": "No recommendation."
+    }
 
 def upsert_local(item):
     conn = sqlite3.connect(DB_PATH)
@@ -135,18 +154,21 @@ def upsert_local(item):
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS feedback_items (
             id TEXT PRIMARY KEY, platform TEXT, author TEXT, date TEXT,
-            event TEXT, text TEXT, sentiment TEXT, city TEXT, isUpcoming INTEGER, parent_id TEXT
+            event TEXT, text TEXT, sentiment TEXT, city TEXT, isUpcoming INTEGER, parent_id TEXT,
+            priority_score INTEGER, category_tag TEXT, action_insight TEXT
         )
     """)
-    try:
-        cursor.execute("ALTER TABLE feedback_items ADD COLUMN parent_id TEXT")
-    except sqlite3.OperationalError:
-        pass
+    for col, col_type in [("parent_id", "TEXT"), ("priority_score", "INTEGER"), ("category_tag", "TEXT"), ("action_insight", "TEXT")]:
+        try:
+            cursor.execute(f"ALTER TABLE feedback_items ADD COLUMN {col} {col_type}")
+        except sqlite3.OperationalError:
+            pass
     cursor.execute("""
-        INSERT OR REPLACE INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id, priority_score, category_tag, action_insight)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (item["id"], item["platform"], item["author"], item["date"], item["event"],
-          item["text"], item["sentiment"], item["city"], 1 if item["isUpcoming"] else 0, item.get("parent_id")))
+          item["text"], item["sentiment"], item["city"], 1 if item["isUpcoming"] else 0, item.get("parent_id"),
+          item.get("priority_score", 1), item.get("category_tag", "General"), item.get("action_insight", "No recommendation.")))
     conn.commit()
     conn.close()
 
@@ -290,7 +312,10 @@ def main():
                             "sentiment": analysis.get("sentiment", "Neutral"),
                             "city": city,
                             "isUpcoming": bool(analysis.get("isUpcoming")),
-                            "parent_id": None
+                            "parent_id": None,
+                            "priority_score": int(analysis.get("priority_score", 1)),
+                            "category_tag": analysis.get("category_tag", "General"),
+                            "action_insight": analysis.get("action_insight", "No recommendation.")
                         }
                         upsert_local(new_item)
                         total_added += 1
@@ -329,7 +354,10 @@ def main():
                                 "sentiment": comm_analysis.get("sentiment", "Neutral"),
                                 "city": city, # inherit parent city
                                 "isUpcoming": False,
-                                "parent_id": post_id
+                                "parent_id": post_id,
+                                "priority_score": int(comm_analysis.get("priority_score", 1)),
+                                "category_tag": comm_analysis.get("category_tag", "General"),
+                                "action_insight": comm_analysis.get("action_insight", "No recommendation.")
                             }
                             upsert_local(comm_item)
                             total_added += 1

@@ -107,10 +107,13 @@ def analyze_tweet_with_gemini(text: str) -> dict:
             "sentiment": "Neutral",
             "city": "Birmingham",
             "isUpcoming": False,
-            "event": "Community Event"
+            "event": "Community Event",
+            "priority_score": 1,
+            "category_tag": "General",
+            "action_insight": "No recommendation."
         }
         
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
     
     prompt = f"""
     Analyze the following social media post regarding Indian diaspora community events in the UK Midlands.
@@ -119,6 +122,9 @@ def analyze_tweet_with_gemini(text: str) -> dict:
     2. "city": must be the UK Midlands city mentioned (e.g., "Birmingham", "Leicester", "Coventry", "Nottingham", "Wolverhampton"). If none is mentioned, default to "Birmingham".
     3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity (rather than a past retrospective event).
     4. "event": a concise, capitalized name for the event referenced (e.g. "Leicester Diwali Lights Switch-On 2026", "Midlands Holi Festival 2026", or "General Community Feedback 2026").
+    5. "priority_score": integer from 1 to 5 indicating the severity, urgency or importance of the issue/feedback raised (1 = minor/general chat, 5 = critical logistical failure, safety concern, or highly important feedback).
+    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "General".
+    7. "action_insight": a single sentence with a constructive, actionable recommendation for organizers based on this post (e.g., "Provide park-and-ride shuttles to reduce traffic congestion", "Offer student ticket discounts to increase accessibility"). If general praise, suggest how to maintain the quality.
     
     Post Text:
     "{text}"
@@ -153,7 +159,10 @@ def analyze_tweet_with_gemini(text: str) -> dict:
         "sentiment": "Neutral",
         "city": "Birmingham",
         "isUpcoming": False,
-        "event": "Community Event"
+        "event": "Community Event",
+        "priority_score": 1,
+        "category_tag": "General",
+        "action_insight": "No recommendation."
     }
 
 # Facebook pages/groups to scrape for Indian diaspora Midlands content
@@ -210,21 +219,30 @@ def upsert_feedback_local(item):
             sentiment TEXT,
             city TEXT,
             isUpcoming INTEGER,
-            parent_id TEXT
+            parent_id TEXT,
+            priority_score INTEGER,
+            category_tag TEXT,
+            action_insight TEXT
         )
     """)
-    try:
-        cursor.execute("ALTER TABLE feedback_items ADD COLUMN parent_id TEXT")
-    except sqlite3.OperationalError:
-        pass
+    # Safely alter table to add columns if they don't exist
+    for col, col_type in [("parent_id", "TEXT"), ("priority_score", "INTEGER"), ("category_tag", "TEXT"), ("action_insight", "TEXT")]:
+        try:
+            cursor.execute(f"ALTER TABLE feedback_items ADD COLUMN {col} {col_type}")
+        except sqlite3.OperationalError:
+            pass
+            
     cursor.execute("""
-        INSERT OR REPLACE INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id, priority_score, category_tag, action_insight)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         item["id"], item["platform"], item["author"], item["date"],
         item["event"], item["text"], item["sentiment"], item["city"],
         1 if item.get("isUpcoming") else 0,
-        item.get("parent_id")
+        item.get("parent_id"),
+        item.get("priority_score", 1),
+        item.get("category_tag", "General"),
+        item.get("action_insight", "No recommendation.")
     ))
     conn.commit()
     conn.close()
@@ -310,7 +328,10 @@ async def run_official_api_scraper(bearer_token: str):
                         "sentiment": analysis.get("sentiment", "Neutral"),
                         "city": analysis.get("city", "Birmingham"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
-                        "parent_id": None
+                        "parent_id": None,
+                        "priority_score": int(analysis.get("priority_score", 1)),
+                        "category_tag": analysis.get("category_tag", "General"),
+                        "action_insight": analysis.get("action_insight", "No recommendation.")
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1
@@ -378,7 +399,10 @@ async def run_twikit_scraper():
                         "sentiment": analysis.get("sentiment", "Neutral"),
                         "city": analysis.get("city", "Birmingham"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
-                        "parent_id": None
+                        "parent_id": None,
+                        "priority_score": int(analysis.get("priority_score", 1)),
+                        "category_tag": analysis.get("category_tag", "General"),
+                        "action_insight": analysis.get("action_insight", "No recommendation.")
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1
@@ -452,7 +476,10 @@ async def run_account_scraper():
                         "sentiment": analysis.get("sentiment", "Neutral"),
                         "city": analysis.get("city", "London"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
-                        "parent_id": None
+                        "parent_id": None,
+                        "priority_score": int(analysis.get("priority_score", 1)),
+                        "category_tag": analysis.get("category_tag", "General"),
+                        "action_insight": analysis.get("action_insight", "No recommendation.")
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1

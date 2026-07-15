@@ -375,6 +375,23 @@ def export_to_json():
             item_dict["parent_id"] = row["parent_id"]
         else:
             item_dict["parent_id"] = None
+
+        # Safely read new columns
+        if "priority_score" in row.keys() and row["priority_score"] is not None:
+            item_dict["priority_score"] = int(row["priority_score"])
+        else:
+            item_dict["priority_score"] = 1
+
+        if "category_tag" in row.keys() and row["category_tag"] is not None:
+            item_dict["category_tag"] = row["category_tag"]
+        else:
+            item_dict["category_tag"] = "General"
+
+        if "action_insight" in row.keys() and row["action_insight"] is not None:
+            item_dict["action_insight"] = row["action_insight"]
+        else:
+            item_dict["action_insight"] = "No recommendation."
+
         items.append(item_dict)
 
     # Deduplicate before exporting
