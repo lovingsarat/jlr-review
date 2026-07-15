@@ -353,7 +353,7 @@ function App() {
   const buildChatContext = (query, items, limit = 8) => {
     const queryWords = new Set((query.toLowerCase().match(/[a-z0-9£]+/g) || []));
     const scored = items.map((item) => {
-      const haystack = `${item.text} ${item.event} ${item.author} ${item.city}`.toLowerCase();
+      const haystack = `${item.text} ${item.event} ${item.author} ${item.city} ${item.platform}`.toLowerCase();
       let score = 0;
       queryWords.forEach((word) => {
         if (haystack.includes(word)) score += 1;
