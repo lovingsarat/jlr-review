@@ -263,6 +263,7 @@ function App() {
   const loadStaticData = async () => {
     let items = STATIC_FEEDBACK_ITEMS;
     let analyticsData = null, jlrA = null, tataA = null;
+    console.log(`[Data Fetch] Attempting to fetch reviews from: ${STATIC_DATA_URL}`);
     try {
       const res = await fetch(STATIC_DATA_URL);
       if (res.ok) {
@@ -271,8 +272,13 @@ function App() {
         analyticsData = data.analytics || null;
         jlrA = data.jlrAnalytics || null;
         tataA = data.tataAnalytics || null;
+        console.log(`[Data Fetch] SUCCESS! Loaded ${items.length} items from server.`);
+      } else {
+        console.warn(`[Data Fetch] FAILED with status ${res.status}. Falling back to static mockup data.`);
       }
-    } catch { /* Fall back to static data */ }
+    } catch (e) {
+      console.error(`[Data Fetch] ERROR: Failed to request data.json. Falling back to static mockup data. Details:`, e);
+    }
     setAllItems(items);
     setAnalytics(analyticsData);
     setJlrAnalytics(jlrA);
