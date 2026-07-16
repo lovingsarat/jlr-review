@@ -263,9 +263,10 @@ function App() {
   const loadStaticData = async () => {
     let items = STATIC_FEEDBACK_ITEMS;
     let analyticsData = null, jlrA = null, tataA = null;
-    console.log(`[Data Fetch] Attempting to fetch reviews from: ${STATIC_DATA_URL}`);
+    const cacheBusterUrl = `${STATIC_DATA_URL}?t=${Date.now()}`;
+    console.log(`[Data Fetch] Attempting to fetch reviews from: ${cacheBusterUrl}`);
     try {
-      const res = await fetch(STATIC_DATA_URL);
+      const res = await fetch(cacheBusterUrl);
       if (res.ok) {
         const data = await res.json();
         items = data.items || items;
