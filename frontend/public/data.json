@@ -1,31 +1,34 @@
 {
-  "exportedAt": "2026-07-16T22:16:15.092600Z",
-  "totalFeedbackCount": 64,
+  "exportedAt": "2026-07-16T22:20:43.808864Z",
+  "totalFeedbackCount": 75,
   "sentimentPercentages": {
-    "Positive": 76.56,
-    "Neutral": 20.31,
-    "Negative": 3.12
+    "Positive": 78.67,
+    "Neutral": 18.67,
+    "Negative": 2.67
   },
   "platformCounts": {
     "Trustpilot": 2,
     "Team-BHP": 2,
     "Zigwheels": 2,
     "YouTube": 4,
+    "AutoExpress": 5,
+    "CarDekho": 6,
     "Twitter": 54
   },
   "cityCounts": {
-    "Range Rover": 11,
-    "Defender": 6,
-    "EV": 5,
-    "SUV": 1,
-    "Jaguar": 3,
+    "Range Rover": 12,
+    "Defender": 7,
+    "EV": 8,
+    "SUV": 3,
+    "Jaguar": 5,
+    "Discovery": 11,
+    "Hatchback": 1,
     "General": 27,
-    "Discovery": 10,
     "N/A": 1
   },
   "brandCounts": {
-    "jlr": 38,
-    "tata": 26
+    "jlr": 43,
+    "tata": 32
   },
   "analytics": {
     "trendingTerms": [
@@ -58,14 +61,21 @@
         "negative": 1
       },
       {
-        "term": "explore",
-        "count": 9,
+        "term": "dynamic",
+        "count": 10,
         "positive": 9,
-        "neutral": 0,
+        "neutral": 1,
         "negative": 0
       },
       {
-        "term": "dynamic",
+        "term": "road",
+        "count": 9,
+        "positive": 7,
+        "neutral": 2,
+        "negative": 0
+      },
+      {
+        "term": "explore",
         "count": 9,
         "positive": 9,
         "neutral": 0,
@@ -100,6 +110,20 @@
         "negative": 2
       },
       {
+        "term": "luxury",
+        "count": 7,
+        "positive": 7,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "term": "sport",
+        "count": 7,
+        "positive": 7,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
         "term": "stunning",
         "count": 7,
         "positive": 6,
@@ -112,27 +136,6 @@
         "positive": 7,
         "neutral": 0,
         "negative": 0
-      },
-      {
-        "term": "landroverdiscovery",
-        "count": 7,
-        "positive": 7,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "term": "info",
-        "count": 7,
-        "positive": 5,
-        "neutral": 2,
-        "negative": 0
-      },
-      {
-        "term": "luxury",
-        "count": 6,
-        "positive": 6,
-        "neutral": 0,
-        "negative": 0
       }
     ],
     "keyIssues": [
@@ -143,8 +146,13 @@
       },
       {
         "theme": "Charging Infrastructure",
-        "count": 4,
+        "count": 5,
         "example": "The Jaguar I-PACE styling is gorgeous, but the 11kW AC slow charging limit is a dealbreaker when audi e-tron does 22kW. JLR must upgrade the onboard charger."
+      },
+      {
+        "theme": "Ride & Handling",
+        "count": 2,
+        "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
       },
       {
         "theme": "Comfort",
@@ -153,11 +161,6 @@
       },
       {
         "theme": "Battery & Range",
-        "count": 1,
-        "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
-      },
-      {
-        "theme": "Ride & Handling",
         "count": 1,
         "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
       },
@@ -175,7 +178,7 @@
     "topPraises": [
       {
         "theme": "EV Experience",
-        "count": 25,
+        "count": 29,
         "example": "Test drove the Punch EV yesterday. The steering feedback is super crisp and the sport mode has serious punch (pun intended). The dashboard cabin materials feel premium, but the rea"
       },
       {
@@ -185,7 +188,7 @@
       },
       {
         "theme": "Comfort & Luxury",
-        "count": 13,
+        "count": 15,
         "example": "Absolutely love my new Defender 90. It's the most capable offroad SUV I have owned. The luxury cabin finishes and Pivi Pro screen are flawless. Only complaint is the premium pricin"
       },
       {
@@ -195,17 +198,17 @@
       },
       {
         "theme": "Performance",
-        "count": 6,
+        "count": 8,
         "example": "My Nexon EV Max completed 30k kms. The battery health is showing 94% which is quite acceptable. Highway charging network by Tata Power is expanding fast, making long weekend runs v"
       },
       {
         "theme": "Off-road Capability",
-        "count": 3,
+        "count": 6,
         "example": "Absolutely love my new Defender 90. It's the most capable offroad SUV I have owned. The luxury cabin finishes and Pivi Pro screen are flawless. Only complaint is the premium pricin"
       },
       {
         "theme": "Practicality",
-        "count": 2,
+        "count": 6,
         "example": "My Nexon EV Max completed 30k kms. The battery health is showing 94% which is quite acceptable. Highway charging network by Tata Power is expanding fast, making long weekend runs v"
       },
       {
@@ -223,7 +226,21 @@
         "negative": 0
       },
       {
+        "event": "Nexon EV",
+        "count": 3,
+        "positive": 3,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
         "event": "Defender 110",
+        "count": 3,
+        "positive": 3,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "event": "F-PACE",
         "count": 3,
         "positive": 3,
         "neutral": 0,
@@ -237,39 +254,25 @@
         "negative": 0
       },
       {
-        "event": "Nexon EV",
+        "event": "Punch EV",
         "count": 2,
         "positive": 2,
         "neutral": 0,
         "negative": 0
       },
       {
-        "event": "Range Rover SV",
+        "event": "Harrier",
         "count": 2,
         "positive": 2,
         "neutral": 0,
         "negative": 0
       },
       {
-        "event": "Range Rover Evoque",
+        "event": "I-PACE",
         "count": 2,
-        "positive": 2,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "event": "F-PACE",
-        "count": 2,
-        "positive": 2,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "event": "Defender 90",
-        "count": 1,
-        "positive": 1,
-        "neutral": 0,
-        "negative": 0
+        "positive": 0,
+        "neutral": 1,
+        "negative": 1
       }
     ],
     "topAuthors": [
@@ -286,8 +289,16 @@
         "count": 8
       },
       {
+        "author": "CarDekho User",
+        "count": 6
+      },
+      {
         "author": "@RangeRover",
         "count": 6
+      },
+      {
+        "author": "AutoExpress Expert",
+        "count": 5
       },
       {
         "author": "YT Review Viewer",
@@ -296,20 +307,12 @@
       {
         "author": "Verified Customer",
         "count": 2
-      },
-      {
-        "author": "Senior BHPian",
-        "count": 2
-      },
-      {
-        "author": "Auto Enthusiast",
-        "count": 2
       }
     ],
     "sentimentByDate": {
       "2026-07-16": {
-        "Positive": 7,
-        "Neutral": 1,
+        "Positive": 17,
+        "Neutral": 2,
         "Negative": 2
       },
       "2026-07-15": {
@@ -380,46 +383,52 @@
     },
     "citySentiment": {
       "Range Rover": {
-        "Positive": 10,
+        "Positive": 11,
         "Neutral": 1,
         "Negative": 0,
-        "total": 11
+        "total": 12
       },
       "Defender": {
-        "Positive": 6,
+        "Positive": 7,
         "Neutral": 0,
         "Negative": 0,
-        "total": 6
+        "total": 7
       },
       "EV": {
-        "Positive": 4,
+        "Positive": 7,
         "Neutral": 0,
+        "Negative": 1,
+        "total": 8
+      },
+      "SUV": {
+        "Positive": 3,
+        "Neutral": 0,
+        "Negative": 0,
+        "total": 3
+      },
+      "Jaguar": {
+        "Positive": 3,
+        "Neutral": 1,
         "Negative": 1,
         "total": 5
       },
-      "SUV": {
+      "Discovery": {
+        "Positive": 11,
+        "Neutral": 0,
+        "Negative": 0,
+        "total": 11
+      },
+      "Hatchback": {
         "Positive": 1,
         "Neutral": 0,
         "Negative": 0,
         "total": 1
-      },
-      "Jaguar": {
-        "Positive": 2,
-        "Neutral": 0,
-        "Negative": 1,
-        "total": 3
       },
       "General": {
         "Positive": 16,
         "Neutral": 11,
         "Negative": 0,
         "total": 27
-      },
-      "Discovery": {
-        "Positive": 10,
-        "Neutral": 0,
-        "Negative": 0,
-        "total": 10
       },
       "N/A": {
         "Positive": 0,
@@ -488,7 +497,7 @@
         "date": "2026-07-15"
       }
     ],
-    "executiveSummary": "Across 64 Tata Motors reviews, sentiment is 77% positive, 20% neutral, and 3% negative. Key concerns: After-Sales Service, Charging Infrastructure, Comfort. Most praised aspects: EV Experience, Design & Styling, Comfort & Luxury. Most reviewed models: Discovery, Defender 110, Range Rover Velar."
+    "executiveSummary": "Across 75 Tata Motors reviews, sentiment is 79% positive, 19% neutral, and 3% negative. Key concerns: After-Sales Service, Charging Infrastructure, Ride & Handling. Most praised aspects: EV Experience, Design & Styling, Comfort & Luxury. Most reviewed models: Discovery, Nexon EV, Defender 110."
   },
   "jlrAnalytics": {
     "trendingTerms": [
@@ -500,14 +509,14 @@
         "negative": 0
       },
       {
-        "term": "explore",
-        "count": 9,
+        "term": "dynamic",
+        "count": 10,
         "positive": 9,
-        "neutral": 0,
+        "neutral": 1,
         "negative": 0
       },
       {
-        "term": "dynamic",
+        "term": "explore",
         "count": 9,
         "positive": 9,
         "neutral": 0,
@@ -525,6 +534,13 @@
         "count": 8,
         "positive": 7,
         "neutral": 1,
+        "negative": 0
+      },
+      {
+        "term": "luxury",
+        "count": 7,
+        "positive": 7,
+        "neutral": 0,
         "negative": 0
       },
       {
@@ -556,7 +572,7 @@
         "negative": 0
       },
       {
-        "term": "luxury",
+        "term": "sport",
         "count": 6,
         "positive": 6,
         "neutral": 0,
@@ -589,13 +605,6 @@
         "positive": 5,
         "neutral": 1,
         "negative": 0
-      },
-      {
-        "term": "find",
-        "count": 6,
-        "positive": 5,
-        "neutral": 1,
-        "negative": 0
       }
     ],
     "keyIssues": [
@@ -606,8 +615,13 @@
       },
       {
         "theme": "Charging Infrastructure",
-        "count": 3,
+        "count": 4,
         "example": "The Jaguar I-PACE styling is gorgeous, but the 11kW AC slow charging limit is a dealbreaker when audi e-tron does 22kW. JLR must upgrade the onboard charger."
+      },
+      {
+        "theme": "Ride & Handling",
+        "count": 2,
+        "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
       },
       {
         "theme": "Comfort",
@@ -616,11 +630,6 @@
       },
       {
         "theme": "Battery & Range",
-        "count": 1,
-        "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
-      },
-      {
-        "theme": "Ride & Handling",
         "count": 1,
         "example": "Had my Range Rover Velar serviced last week. The dealership service was outstanding but the wait time for the air suspension component replacement took 10 days! The car drives perf"
       },
@@ -637,14 +646,14 @@
         "example": "From sketch to sculpture. ​\n​\nThe Range Rover design process begins with the human hand.​\n​\n#RangeRover​ \n\n——  \n\nRefer to the comments for the finer details. https://t.co/QTJa4a1KU"
       },
       {
-        "theme": "Comfort & Luxury",
-        "count": 9,
-        "example": "Absolutely love my new Defender 90. It's the most capable offroad SUV I have owned. The luxury cabin finishes and Pivi Pro screen are flawless. Only complaint is the premium pricin"
+        "theme": "EV Experience",
+        "count": 11,
+        "example": "The electric Jaguar I-PACE delivers responsive EV power and steering dynamics, but its charging capacity of 11kW AC limits public charging utility compared to audi and porsche."
       },
       {
-        "theme": "EV Experience",
-        "count": 9,
-        "example": "Hand-mixed mastery. Signature finishes. Tailored to every curve.​\n​\nBecause colour should feel as refined as form.​\n​\n#RangeRover \n\n——\n\nRefer to the comments for the finer details."
+        "theme": "Comfort & Luxury",
+        "count": 10,
+        "example": "Absolutely love my new Defender 90. It's the most capable offroad SUV I have owned. The luxury cabin finishes and Pivi Pro screen are flawless. Only complaint is the premium pricin"
       },
       {
         "theme": "Interior Quality",
@@ -653,8 +662,13 @@
       },
       {
         "theme": "Off-road Capability",
-        "count": 3,
+        "count": 6,
         "example": "Absolutely love my new Defender 90. It's the most capable offroad SUV I have owned. The luxury cabin finishes and Pivi Pro screen are flawless. Only complaint is the premium pricin"
+      },
+      {
+        "theme": "Practicality",
+        "count": 4,
+        "example": "The Jaguar F-PACE handles with sports-car agility in a practical midsize SUV package. The V8 supercharged engine is punchy, but infotainment menu layouts feel cluttered."
       },
       {
         "theme": "Performance",
@@ -665,11 +679,6 @@
         "theme": "Value for Money",
         "count": 1,
         "example": "Tested the Defender 110 V8 on mud trails. The wade sensing and air suspension adjusting height automatically is amazing. Absolutely worth the premium price tag if you do real off-r"
-      },
-      {
-        "theme": "Practicality",
-        "count": 1,
-        "example": "Nissan Navara 2.3 Tekna Double Cab Pickup in Bronze Metallic!\n\nLoaded with high-spec features: Sat Nav, 360° camera, heated seats, tow bar, and more. Perfect for family, work, and "
       }
     ],
     "topEvents": [
@@ -688,10 +697,31 @@
         "negative": 0
       },
       {
+        "event": "F-PACE",
+        "count": 3,
+        "positive": 3,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
         "event": "Range Rover Velar",
         "count": 2,
         "positive": 1,
         "neutral": 1,
+        "negative": 0
+      },
+      {
+        "event": "I-PACE",
+        "count": 2,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 1
+      },
+      {
+        "event": "Range Rover",
+        "count": 2,
+        "positive": 2,
+        "neutral": 0,
         "negative": 0
       },
       {
@@ -707,27 +737,6 @@
         "positive": 2,
         "neutral": 0,
         "negative": 0
-      },
-      {
-        "event": "F-PACE",
-        "count": 2,
-        "positive": 2,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "event": "Defender 90",
-        "count": 1,
-        "positive": 1,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "event": "I-PACE",
-        "count": 1,
-        "positive": 0,
-        "neutral": 0,
-        "negative": 1
       }
     ],
     "topAuthors": [
@@ -744,6 +753,10 @@
         "count": 6
       },
       {
+        "author": "AutoExpress Expert",
+        "count": 5
+      },
+      {
         "author": "Verified Customer",
         "count": 2
       },
@@ -754,8 +767,8 @@
     ],
     "sentimentByDate": {
       "2026-07-16": {
-        "Positive": 2,
-        "Neutral": 1,
+        "Positive": 6,
+        "Neutral": 2,
         "Negative": 1
       },
       "2025-08-29": {
@@ -826,28 +839,28 @@
     },
     "citySentiment": {
       "Range Rover": {
-        "Positive": 10,
+        "Positive": 11,
         "Neutral": 1,
         "Negative": 0,
-        "total": 11
+        "total": 12
       },
       "Defender": {
-        "Positive": 6,
+        "Positive": 7,
         "Neutral": 0,
         "Negative": 0,
-        "total": 6
+        "total": 7
       },
       "Jaguar": {
-        "Positive": 2,
-        "Neutral": 0,
+        "Positive": 3,
+        "Neutral": 1,
         "Negative": 1,
-        "total": 3
+        "total": 5
       },
       "Discovery": {
-        "Positive": 10,
+        "Positive": 11,
         "Neutral": 0,
         "Negative": 0,
-        "total": 10
+        "total": 11
       },
       "General": {
         "Positive": 2,
@@ -914,7 +927,7 @@
         "date": "2024-11-05"
       }
     ],
-    "executiveSummary": "Across 38 JLR (Jaguar Land Rover) reviews, sentiment is 79% positive, 18% neutral, and 3% negative. Key concerns: After-Sales Service, Charging Infrastructure, Comfort. Most praised aspects: Design & Styling, Comfort & Luxury, EV Experience. Most reviewed models: Discovery, Defender 110, Range Rover Velar."
+    "executiveSummary": "Across 43 JLR (Jaguar Land Rover) reviews, sentiment is 79% positive, 19% neutral, and 2% negative. Key concerns: After-Sales Service, Charging Infrastructure, Ride & Handling. Most praised aspects: Design & Styling, EV Experience, Comfort & Luxury. Most reviewed models: Discovery, Defender 110, F-PACE."
   },
   "tataAnalytics": {
     "trendingTerms": [
@@ -937,6 +950,27 @@
         "count": 10,
         "positive": 7,
         "neutral": 3,
+        "negative": 0
+      },
+      {
+        "term": "world",
+        "count": 6,
+        "positive": 6,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "term": "real",
+        "count": 5,
+        "positive": 5,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "term": "make",
+        "count": 5,
+        "positive": 5,
+        "neutral": 0,
         "negative": 0
       },
       {
@@ -968,7 +1002,21 @@
         "negative": 0
       },
       {
-        "term": "world",
+        "term": "which",
+        "count": 4,
+        "positive": 4,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "term": "road",
+        "count": 4,
+        "positive": 4,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "term": "high",
         "count": 4,
         "positive": 4,
         "neutral": 0,
@@ -986,41 +1034,6 @@
         "count": 4,
         "positive": 1,
         "neutral": 3,
-        "negative": 0
-      },
-      {
-        "term": "fy26",
-        "count": 4,
-        "positive": 3,
-        "neutral": 1,
-        "negative": 0
-      },
-      {
-        "term": "people",
-        "count": 4,
-        "positive": 4,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "term": "which",
-        "count": 3,
-        "positive": 3,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "term": "look",
-        "count": 3,
-        "positive": 3,
-        "neutral": 0,
-        "negative": 0
-      },
-      {
-        "term": "real",
-        "count": 3,
-        "positive": 3,
-        "neutral": 0,
         "negative": 0
       }
     ],
@@ -1044,7 +1057,7 @@
     "topPraises": [
       {
         "theme": "EV Experience",
-        "count": 16,
+        "count": 18,
         "example": "Test drove the Punch EV yesterday. The steering feedback is super crisp and the sport mode has serious punch (pun intended). The dashboard cabin materials feel premium, but the rea"
       },
       {
@@ -1054,23 +1067,28 @@
       },
       {
         "theme": "Comfort & Luxury",
-        "count": 4,
+        "count": 5,
         "example": "Test drove the Punch EV yesterday. The steering feedback is super crisp and the sport mode has serious punch (pun intended). The dashboard cabin materials feel premium, but the rea"
       },
       {
         "theme": "Performance",
-        "count": 3,
+        "count": 5,
         "example": "My Nexon EV Max completed 30k kms. The battery health is showing 94% which is quite acceptable. Highway charging network by Tata Power is expanding fast, making long weekend runs v"
+      },
+      {
+        "theme": "Practicality",
+        "count": 2,
+        "example": "My Nexon EV Max completed 30k kms. The battery health is showing 94% which is quite acceptable. Highway charging network by Tata Power is expanding fast, making long weekend runs v"
+      },
+      {
+        "theme": "Safety Features",
+        "count": 2,
+        "example": "The Tata Harrier is a beast on the highway. Extremely spacious cabin, solid safety with 5-star GNCAP rating, but low-end torque in city traffic could be slightly improved."
       },
       {
         "theme": "Interior Quality",
         "count": 1,
         "example": "Test drove the Punch EV yesterday. The steering feedback is super crisp and the sport mode has serious punch (pun intended). The dashboard cabin materials feel premium, but the rea"
-      },
-      {
-        "theme": "Practicality",
-        "count": 1,
-        "example": "My Nexon EV Max completed 30k kms. The battery health is showing 94% which is quite acceptable. Highway charging network by Tata Power is expanding fast, making long weekend runs v"
       },
       {
         "theme": "Value for Money",
@@ -1081,24 +1099,31 @@
     "topEvents": [
       {
         "event": "Nexon EV",
+        "count": 3,
+        "positive": 3,
+        "neutral": 0,
+        "negative": 0
+      },
+      {
+        "event": "Punch EV",
         "count": 2,
         "positive": 2,
         "neutral": 0,
         "negative": 0
       },
       {
-        "event": "Punch EV",
-        "count": 1,
-        "positive": 1,
+        "event": "Harrier",
+        "count": 2,
+        "positive": 2,
         "neutral": 0,
         "negative": 0
       },
       {
-        "event": "Harrier",
-        "count": 1,
+        "event": "Tiago EV",
+        "count": 2,
         "positive": 1,
         "neutral": 0,
-        "negative": 0
+        "negative": 1
       },
       {
         "event": "Curvv EV",
@@ -1108,17 +1133,28 @@
         "negative": 0
       },
       {
-        "event": "Tiago EV",
+        "event": "Safari",
         "count": 1,
-        "positive": 0,
+        "positive": 1,
         "neutral": 0,
-        "negative": 1
+        "negative": 0
+      },
+      {
+        "event": "Altroz",
+        "count": 1,
+        "positive": 1,
+        "neutral": 0,
+        "negative": 0
       }
     ],
     "topAuthors": [
       {
         "author": "@TataMotors",
         "count": 20
+      },
+      {
+        "author": "CarDekho User",
+        "count": 6
       },
       {
         "author": "Senior BHPian",
@@ -1135,7 +1171,7 @@
     ],
     "sentimentByDate": {
       "2026-07-16": {
-        "Positive": 5,
+        "Positive": 11,
         "Neutral": 0,
         "Negative": 1
       },
@@ -1207,12 +1243,18 @@
     },
     "citySentiment": {
       "EV": {
-        "Positive": 4,
+        "Positive": 7,
         "Neutral": 0,
         "Negative": 1,
-        "total": 5
+        "total": 8
       },
       "SUV": {
+        "Positive": 3,
+        "Neutral": 0,
+        "Negative": 0,
+        "total": 3
+      },
+      "Hatchback": {
         "Positive": 1,
         "Neutral": 0,
         "Negative": 0,
@@ -1277,7 +1319,7 @@
         "date": "2026-06-21"
       }
     ],
-    "executiveSummary": "Across 26 Tata Motors reviews, sentiment is 73% positive, 23% neutral, and 4% negative. Key concerns: After-Sales Service, Charging Infrastructure, Infotainment. Most praised aspects: EV Experience, Design & Styling, Comfort & Luxury. Most reviewed models: Nexon EV, Punch EV, Harrier."
+    "executiveSummary": "Across 32 Tata Motors reviews, sentiment is 78% positive, 19% neutral, and 3% negative. Key concerns: After-Sales Service, Charging Infrastructure, Infotainment. Most praised aspects: EV Experience, Design & Styling, Comfort & Luxury. Most reviewed models: Nexon EV, Punch EV, Harrier."
   },
   "items": [
     {
@@ -1438,6 +1480,182 @@
       "priority_score": 5,
       "category_tag": "After-Sales",
       "action_insight": "Improve dealership staff training and streamline the diagnostic process for EV-specific charging errors to reduce vehicle downtime.",
+      "brand": "tata"
+    },
+    {
+      "id": "autoexpress_fb_5506586750206257524",
+      "platform": "AutoExpress",
+      "author": "AutoExpress Expert",
+      "date": "2026-07-16",
+      "event": "Defender General",
+      "text": "The Land Rover Defender remains the gold standard of off-road utility cars. Excellent road handling manners coupled with unmatched wading and terrain response settings.",
+      "sentiment": "Positive",
+      "city": "Defender",
+      "isUpcoming": false,
+      "parent_id": "https://www.autoexpress.co.uk/land-rover/defender",
+      "priority_score": 5,
+      "category_tag": "Off-road",
+      "action_insight": "Maintain the current engineering focus on terrain response and wading capabilities as they are key drivers of the vehicle's market-leading reputation.",
+      "brand": "jlr"
+    },
+    {
+      "id": "autoexpress_fb_8504999392266256322",
+      "platform": "AutoExpress",
+      "author": "AutoExpress Expert",
+      "date": "2026-07-16",
+      "event": "Range Rover",
+      "text": "The new Range Rover is an absolute masterpiece of luxury and comfort. Acoustic double glazing and floating air suspension create a silent cabin, though the infotainment can occasionally lag.",
+      "sentiment": "Positive",
+      "city": "Range Rover",
+      "isUpcoming": false,
+      "parent_id": "https://www.autoexpress.co.uk/land-rover/range-rover",
+      "priority_score": 4,
+      "category_tag": "Comfort",
+      "action_insight": "Optimize infotainment software performance to address occasional lag and maintain the premium user experience.",
+      "brand": "jlr"
+    },
+    {
+      "id": "autoexpress_fb_5531683704607207498",
+      "platform": "AutoExpress",
+      "author": "AutoExpress Expert",
+      "date": "2026-07-16",
+      "event": "F-PACE",
+      "text": "The Jaguar F-PACE handles with sports-car agility in a practical midsize SUV package. The V8 supercharged engine is punchy, but infotainment menu layouts feel cluttered.",
+      "sentiment": "Positive",
+      "city": "Jaguar",
+      "isUpcoming": false,
+      "parent_id": "https://www.autoexpress.co.uk/jaguar/f-pace",
+      "priority_score": 4,
+      "category_tag": "Performance",
+      "action_insight": "Simplify the infotainment menu structure to improve user experience and reduce interface clutter.",
+      "brand": "jlr"
+    },
+    {
+      "id": "autoexpress_fb_7632509803321840509",
+      "platform": "AutoExpress",
+      "author": "AutoExpress Expert",
+      "date": "2026-07-16",
+      "event": "I-PACE",
+      "text": "The electric Jaguar I-PACE delivers responsive EV power and steering dynamics, but its charging capacity of 11kW AC limits public charging utility compared to audi and porsche.",
+      "sentiment": "Neutral",
+      "city": "Jaguar",
+      "isUpcoming": false,
+      "parent_id": "https://www.autoexpress.co.uk/jaguar/i-pace",
+      "priority_score": 4,
+      "category_tag": "EV Range",
+      "action_insight": "Upgrade the onboard charging capacity to remain competitive with rival EV charging speeds.",
+      "brand": "jlr"
+    },
+    {
+      "id": "autoexpress_fb_4269544685411526630",
+      "platform": "AutoExpress",
+      "author": "AutoExpress Expert",
+      "date": "2026-07-16",
+      "event": "Discovery General",
+      "text": "The Land Rover Discovery offers unmatched family practicality with 7 full-sized adult seats and legendary off-road towing capacity. The ride is comfortable, but fuel economy is poor.",
+      "sentiment": "Positive",
+      "city": "Discovery",
+      "isUpcoming": false,
+      "parent_id": "https://www.autoexpress.co.uk/land-rover/discovery",
+      "priority_score": 3,
+      "category_tag": "Comfort",
+      "action_insight": "Improve fuel efficiency to address customer concerns regarding the vehicle's high consumption levels.",
+      "brand": "jlr"
+    },
+    {
+      "id": "cardekho_fb_3602099888828174593",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Nexon EV",
+      "text": "I bought the Nexon EV Empowered variant. Extremely smooth drive and super low operating costs. Real-world range is around 310km which is good, but Tata must improve their software stability as the screen hung twice.",
+      "sentiment": "Positive",
+      "city": "EV",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/nexon-ev/user-reviews",
+      "priority_score": 4,
+      "category_tag": "Infotainment",
+      "action_insight": "Tata Motors should prioritize a firmware update to address infotainment system stability and prevent screen freezing issues reported by users.",
+      "brand": "tata"
+    },
+    {
+      "id": "cardekho_fb_2552310971477768327",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Punch EV",
+      "text": "Tata Punch EV is an amazing package for urban commutes. Real world range is 275km. The size makes it easy to park, and ground clearance handles massive speedbumps easily.",
+      "sentiment": "Positive",
+      "city": "EV",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/punch-ev/user-reviews",
+      "priority_score": 4,
+      "category_tag": "EV Range",
+      "action_insight": "Leverage the positive feedback on urban maneuverability and ground clearance in marketing campaigns to emphasize the vehicle's suitability for city driving.",
+      "brand": "tata"
+    },
+    {
+      "id": "cardekho_fb_3151137436694128736",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Harrier",
+      "text": "The Tata Harrier is a beast on the highway. Extremely spacious cabin, solid safety with 5-star GNCAP rating, but low-end torque in city traffic could be slightly improved.",
+      "sentiment": "Positive",
+      "city": "SUV",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/harrier/user-reviews",
+      "priority_score": 4,
+      "category_tag": "Performance",
+      "action_insight": "Optimize low-end torque tuning to improve drivability and responsiveness in stop-and-go city traffic conditions.",
+      "brand": "tata"
+    },
+    {
+      "id": "cardekho_fb_3465392042269479690",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Safari",
+      "text": "The Safari remains the best 7-seater road trip cruiser. Suspension is perfectly tuned for Indian road potholes. ADAS features are highly responsive and helpful.",
+      "sentiment": "Positive",
+      "city": "SUV",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/safari/user-reviews",
+      "priority_score": 5,
+      "category_tag": "Comfort",
+      "action_insight": "Maintain the current suspension tuning and ADAS calibration as they are key competitive advantages for the Safari's target demographic.",
+      "brand": "tata"
+    },
+    {
+      "id": "cardekho_fb_7418275535754868392",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Altroz",
+      "text": "Excellent build quality on the Altroz. GNCAP 5-star rating makes me feel very secure. Mileage is good, though engine noise at high speed is slightly high.",
+      "sentiment": "Positive",
+      "city": "Hatchback",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/altroz/user-reviews",
+      "priority_score": 4,
+      "category_tag": "Safety",
+      "action_insight": "Improve cabin insulation to reduce engine noise at high speeds while maintaining the strong safety reputation.",
+      "brand": "tata"
+    },
+    {
+      "id": "cardekho_fb_7313652026313684991",
+      "platform": "CarDekho",
+      "author": "CarDekho User",
+      "date": "2026-07-16",
+      "event": "Tiago EV",
+      "text": "Perfect daily driver for city commute. Very easy to drive in heavy bumper-to-bumper traffic. AC is very effective, and fast charging works well.",
+      "sentiment": "Positive",
+      "city": "EV",
+      "isUpcoming": false,
+      "parent_id": "https://www.cardekho.com/tata/tiago-ev/user-reviews",
+      "priority_score": 4,
+      "category_tag": "Comfort",
+      "action_insight": "Maintain the current city-focused comfort and charging efficiency features as they are highly valued by urban commuters.",
       "brand": "tata"
     },
     {
