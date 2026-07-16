@@ -1,4 +1,4 @@
-/* Premium Sleek Dark Mode Brand Theme for Midlands Sentiment */
+/* JLR & Tata Motors — Vehicle Review Intelligence Hub */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -6,7 +6,7 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  /* Sleek Dark Palette */
+  /* Base Dark Palette */
   --bg-app: #09070f;
   --bg-card: #13101c;
   --bg-card-hover: #1b172a;
@@ -18,13 +18,13 @@
   --text-secondary: #a196b8;
   --text-muted: #6f648a;
 
-  /* Accents */
-  --color-primary: #9d5cfc;
-  --color-primary-container: rgba(157, 92, 252, 0.12);
-  --color-secondary: #0ea5e9;
-  --color-secondary-container: rgba(14, 165, 233, 0.12);
+  /* Default accents (overridden by brand classes below) */
+  --color-primary: #4a7c59;
+  --color-primary-container: rgba(74, 124, 89, 0.12);
+  --color-secondary: #c9a84c;
+  --color-secondary-container: rgba(201, 168, 76, 0.12);
 
-  /* Sentiments */
+  /* Sentiments (unchanged by brand) */
   --color-positive: #10b981;
   --color-positive-container: rgba(16, 185, 129, 0.12);
   --color-neutral: #f59e0b;
@@ -35,8 +35,172 @@
   /* Transitions */
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-premium: 0 12px 30px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 15px rgba(157, 92, 252, 0.2);
+  --shadow-glow: 0 0 18px rgba(74, 124, 89, 0.25);
+
+  /* Brand switcher */
+  --brand-jlr-primary: #4a7c59;
+  --brand-jlr-secondary: #c9a84c;
+  --brand-jlr-bg: rgba(74, 124, 89, 0.08);
+  --brand-jlr-border: rgba(74, 124, 89, 0.35);
+  --brand-tata-primary: #0061d5;
+  --brand-tata-secondary: #e8b84b;
+  --brand-tata-bg: rgba(0, 97, 213, 0.08);
+  --brand-tata-border: rgba(0, 97, 213, 0.35);
 }
+
+/* ── JLR Brand Theme ── */
+.brand-jlr {
+  --color-primary: #4a7c59;
+  --color-primary-container: rgba(74, 124, 89, 0.12);
+  --color-secondary: #c9a84c;
+  --color-secondary-container: rgba(201, 168, 76, 0.12);
+  --shadow-glow: 0 0 18px rgba(74, 124, 89, 0.25);
+  --border-color-hover: rgba(74, 124, 89, 0.45);
+}
+
+/* ── Tata Brand Theme ── */
+.brand-tata {
+  --color-primary: #0061d5;
+  --color-primary-container: rgba(0, 97, 213, 0.12);
+  --color-secondary: #e8b84b;
+  --color-secondary-container: rgba(232, 184, 75, 0.12);
+  --shadow-glow: 0 0 18px rgba(0, 97, 213, 0.25);
+  --border-color-hover: rgba(0, 97, 213, 0.45);
+}
+
+/* ── Brand Switcher Header ── */
+.brand-switcher-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.brand-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  font-family: var(--font-sans);
+  text-align: left;
+}
+
+.brand-switch-btn:hover {
+  border-color: var(--border-color-hover);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+}
+
+.brand-jlr-btn.active {
+  background: var(--brand-jlr-bg);
+  border-color: var(--brand-jlr-border);
+  color: var(--text-primary);
+  box-shadow: 0 0 12px rgba(74, 124, 89, 0.2);
+}
+
+.brand-tata-btn.active {
+  background: var(--brand-tata-bg);
+  border-color: var(--brand-tata-border);
+  color: var(--text-primary);
+  box-shadow: 0 0 12px rgba(0, 97, 213, 0.2);
+}
+
+.brand-switch-emblem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.jlr-emblem {
+  background: linear-gradient(135deg, rgba(74,124,89,0.3), rgba(201,168,76,0.2));
+  color: #4a7c59;
+  border: 1px solid rgba(74,124,89,0.3);
+}
+
+.brand-jlr-btn.active .jlr-emblem {
+  color: #6ab87e;
+  background: linear-gradient(135deg, rgba(74,124,89,0.4), rgba(201,168,76,0.25));
+}
+
+.tata-emblem {
+  background: linear-gradient(135deg, rgba(0,97,213,0.3), rgba(232,184,75,0.2));
+  color: #0061d5;
+  border: 1px solid rgba(0,97,213,0.3);
+}
+
+.brand-tata-btn.active .tata-emblem {
+  color: #4d96ff;
+  background: linear-gradient(135deg, rgba(0,97,213,0.4), rgba(232,184,75,0.25));
+}
+
+.brand-switch-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bsw-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+}
+
+.bsw-sub {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  opacity: 0.6;
+}
+
+.brand-jlr-btn.active .bsw-sub { color: var(--brand-jlr-primary); opacity: 1; }
+.brand-tata-btn.active .bsw-sub { color: var(--brand-tata-primary); opacity: 1; }
+
+.bsw-active-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.brand-jlr-btn .bsw-active-dot { background: var(--brand-jlr-primary); box-shadow: 0 0 6px var(--brand-jlr-primary); }
+.brand-tata-btn .bsw-active-dot { background: var(--brand-tata-primary); box-shadow: 0 0 6px var(--brand-tata-primary); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+.brand-divider {
+  color: var(--border-color);
+  font-size: 20px;
+  padding: 0 4px;
+  user-select: none;
+  opacity: 0.5;
+}
+
+/* Platform badge extension for new platforms */
+.platform-badge.reddit { background: linear-gradient(135deg, #ff4500, #cc3700); }
+.platform-badge.autoexpress { background: linear-gradient(135deg, #d32f2f, #b71c1c); }
+.platform-badge.trustpilot { background: linear-gradient(135deg, #00b67a, #007a54); }
+.platform-badge.teambhp { background: linear-gradient(135deg, #1565c0, #0d47a1); }
+.platform-badge.cardekho { background: linear-gradient(135deg, #e65100, #bf360c); }
+.platform-badge.zigwheels { background: linear-gradient(135deg, #6a1b9a, #4a148c); }
 
 * {
   box-sizing: border-box;

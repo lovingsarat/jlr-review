@@ -1,21 +1,102 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# JLR & Tata Motors — Vehicle Review Intelligence Hub
 
-# Run and deploy your AI Studio app
+A dual-brand automotive customer review intelligence dashboard powered by AI sentiment analysis.
 
-This contains everything you need to run your app locally.
+## Overview
 
-View your app in AI Studio: https://ai.studio/apps/090a9206-6aac-4e66-b88a-48e9c2a2b0ee
+This platform aggregates and analyses customer reviews, owner feedback, and expert opinions across:
 
-## Run Locally
+- **JLR (Jaguar Land Rover)** — Jaguar, Range Rover, Defender, Discovery
+- **Tata Motors** — Nexon EV, Punch EV, Curvv EV, Harrier EV, Safari, Tiago EV, Altroz, and more
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+## Features
 
+- **Dual-brand switcher** — toggle between JLR (green/gold theme) and Tata Motors (blue/gold theme)
+- **Live sentiment analysis** via Gemini AI — Positive / Neutral / Negative per review
+- **Feed Explorer** — filter by brand group, review theme (Performance, EV Range, Comfort, etc.), platform
+- **AI RAG Chat** — ask questions about any model, compare sentiment, surface top issues
+- **Insights Tab** — trending terms, key issues, top praises, model sentiment breakdowns
+- **Automated scraping** — Twitter/X, Reddit (r/landrover, r/jaguar, r/IndiaCars), AutoExpress, CarDekho
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React + Vite |
+| Styling | Vanilla CSS (dark mode, dual brand themes) |
+| AI Analysis | Google Gemini 1.5 Flash |
+| Scraping | Twikit (Twitter), httpx (Reddit public JSON), Playwright (AutoExpress/CarDekho) |
+| Database | SQLite (`diaspora.db`) |
+| Deployment | Vercel (frontend) |
+
+## Setup
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/lovingsarat/jlr-review.git
+cd jlr-review
+cd frontend && npm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+# Edit .env with your credentials
+```
+
+Required variables:
+- `GEMINI_API_KEY` — for backend sentiment analysis
+- `VITE_GEMINI_API_KEY` — for frontend AI chat
+- `TWITTER_AUTH_TOKEN` + `TWITTER_CT0` — for Twitter scraping (or use Bearer Token)
+
+### 3. Run the scraper
+
+```bash
+cd backend
+python -m pip install -r requirements.txt
+playwright install chromium
+python scraper.py
+```
+
+### 4. Export data to frontend
+
+```bash
+python export_data.py
+```
+
+### 5. Run frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+## Data Schema
+
+Each review item has:
+
+| Field | Description |
+|---|---|
+| `brand` | `"jlr"` or `"tata"` |
+| `city` | Brand group (e.g., `"Defender"`, `"EV"`) |
+| `event` | Vehicle model (e.g., `"Defender 110"`, `"Nexon EV"`) |
+| `sentiment` | `"Positive"` / `"Neutral"` / `"Negative"` |
+| `category_tag` | Review theme (Performance, EV Range, Comfort, etc.) |
+| `priority_score` | 1–5 AI-generated urgency score |
+| `action_insight` | Actionable recommendation for the brand team |
+
+## Scraping Sources
+
+| Source | Brand | Method |
+|---|---|---|
+| Twitter/X | JLR + Tata | Twikit browser scraper / Bearer Token API |
+| Reddit (r/landrover, r/jaguar, r/RangeRover, r/Defender) | JLR | Public JSON API |
+| Reddit (r/IndiaCars, r/TataMotors) | Tata | Public JSON API |
+| AutoExpress | JLR | Playwright |
+| CarDekho | Tata | Playwright |
+
+## License
+
+MIT

@@ -1,3 +1,4 @@
+# Environment & secrets
 .env
 .DS_Store
 
@@ -6,9 +7,27 @@ backend/.venv/
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+
+# Database (contains scraped data — not committed)
 backend/diaspora.db
+
+# Browser session files (credentials)
 backend/cookies.json
+backend/fb_cookies.json
+
+# Build artifacts
+frontend/dist/
+frontend/node_modules/
+
+# Vercel deployment
 .vercel/
 
+# Migration / check scripts (dev tools only)
+backend/check_db.py
+backend/migrate_db.py
+backend/migrate_to_automotive.py
 
-backend/fb_cookies.json
+# OS
+Thumbs.db
+desktop.ini

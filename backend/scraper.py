@@ -10,22 +10,62 @@ from dotenv import load_dotenv
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "diaspora.db")
 
-# Official accounts to ingest tweets from directly
-OFFICIAL_ACCOUNTS = ["MEAIndia", "HCI_London", "CGI_Bghm", "BhamCityCouncil", "Leicester_News", "coventrycc", "HinduCouncilBhm", "VFSGlobal"]
+# Official brand accounts to monitor on Twitter/X (verified handles)
+JLR_ACCOUNTS = [
+    "LandRover",       # @LandRover — official global
+    "Jaguar",          # @Jaguar — official global
+    "RangeRoverUSA",   # @RangeRoverUSA — US Range Rover official
+    "LandRoverNA",     # @LandRoverNA — North America
+    "Defender",        # @Defender — Defender official
+]
+TATA_ACCOUNTS = [
+    "TataMotors",      # @TataMotors — official
+    "TataMotorsCars",  # @TataMotorsCars — passenger vehicles
+    "TataNexonEV",     # @TataNexonEV
+    "TataMotorsAlert", # @TataMotorsAlert — announcements
+]
+ALL_BRAND_ACCOUNTS = JLR_ACCOUNTS + TATA_ACCOUNTS
 
 # Load environment
 load_dotenv(dotenv_path="../.env")
 load_dotenv()
 
 # Initialize Twikit Client
-GEMINI_MODEL = "gemini-1.5-flash"
-client = Client('en-US')
+GEMINI_MODEL = "gemini-3.1-flash-lite"
+client = Client("en-US")
 
-# Try to load Twitter session from .env cookies, cookies.json, or login
+# ─── JLR / Tata relevance keywords ──────────────────────────────────────────
+JLR_KEYWORDS = [
+    "jaguar", "land rover", "range rover", "landrover", "defender",
+    "discovery", "f-pace", "fpace", "i-pace", "ipace", "e-pace", "epace",
+    "velar", "evoque", "octa", "jlr", "freelander",
+]
+TATA_KEYWORDS = [
+    "tata motors", "tata nexon", "nexon ev", "tata punch", "punch ev",
+    "curvv", "tata harrier", "harrier ev", "tata safari", "tiago ev",
+    "tata tiago", "tigor ev", "tata tigor", "altroz", "tata altroz",
+    "xpres-t", "xpres ev", "sierra ev", "tata sierra",
+]
+ALL_AUTOMOTIVE_KEYWORDS = JLR_KEYWORDS + TATA_KEYWORDS
+
+
+def is_automotive_relevant(text: str) -> bool:
+    text_lower = text.lower()
+    return any(kw in text_lower for kw in ALL_AUTOMOTIVE_KEYWORDS)
+
+
+def detect_brand(text: str) -> str:
+    """Return 'jlr' or 'tata' based on keyword presence, default 'jlr'."""
+    text_lower = text.lower()
+    jlr_hits = sum(1 for kw in JLR_KEYWORDS if kw in text_lower)
+    tata_hits = sum(1 for kw in TATA_KEYWORDS if kw in text_lower)
+    return "tata" if tata_hits > jlr_hits else "jlr"
+
+
+# ─── Twitter session loading ─────────────────────────────────────────────────
 def load_twitter_session():
     """Load Twitter session using env cookies, cookies.json, or login fallback.
     Returns True if session is ready, False otherwise."""
-    # Method 1: Read cookies directly from .env variables
     auth_token = os.getenv("TWITTER_AUTH_TOKEN", "")
     ct0 = os.getenv("TWITTER_CT0", "")
     if auth_token and ct0 and auth_token != "your_auth_token" and ct0 != "your_ct0":
@@ -36,11 +76,10 @@ def load_twitter_session():
         except Exception as e:
             print(f"[WARN] Failed to set cookies from .env: {e}")
 
-    # Method 2: Load from cookies.json file
     cookies_file = "cookies.json"
     if os.path.exists(cookies_file):
         try:
-            with open(cookies_file, 'r') as f:
+            with open(cookies_file, "r") as f:
                 cookies_data = json.load(f)
             if isinstance(cookies_data, list):
                 cookies_dict = {c["name"]: c["value"] for c in cookies_data if "name" in c and "value" in c}
@@ -55,7 +94,6 @@ def load_twitter_session():
         except Exception as e:
             print(f"[WARN] Failed to load cookies.json: {e}")
 
-    # Method 3: Fallback to login with credentials
     username = os.getenv("TWITTER_USERNAME")
     email = os.getenv("TWITTER_EMAIL")
     password = os.getenv("TWITTER_PASSWORD")
@@ -74,25 +112,24 @@ def load_twitter_session():
         print("[WARNING] No Twitter credentials or cookies found. Skipping X scraping.")
     return False
 
+
+# ─── Gemini JSON extraction helpers ─────────────────────────────────────────
 def make_json_valid(s: str) -> str:
-    """Extract the first valid JSON object from a string, handling duplicate/trailing braces."""
+    """Extract the first valid JSON object from a string."""
     import re
     s = s.strip()
-    # Use regex to greedily match from first { to last }, then walk back to find valid JSON
-    match = re.search(r'\{.*\}', s, re.DOTALL)
+    match = re.search(r"\{.*\}", s, re.DOTALL)
     if not match:
         return s
     candidate = match.group(0)
-    # Try progressively shorter strings by trimming trailing } until valid JSON is found
-    while candidate.endswith('}'):
+    while candidate.endswith("}"):
         try:
             json.loads(candidate)
-            return candidate  # Found valid JSON
+            return candidate
         except json.JSONDecodeError as e:
-            if 'Extra data' in str(e) or 'Expecting' in str(e):
+            if "Extra data" in str(e) or "Expecting" in str(e):
                 candidate = candidate.rstrip()
-                # Remove last trailing }
-                last_brace = candidate.rfind('}')
+                last_brace = candidate.rfind("}")
                 if last_brace == -1:
                     break
                 candidate = candidate[:last_brace].rstrip()
@@ -100,115 +137,114 @@ def make_json_valid(s: str) -> str:
                 break
     return s
 
-# Function to analyze tweet contents using Gemini API (structured extraction)
-def analyze_tweet_with_gemini(text: str) -> dict:
+
+# ─── Gemini Automotive Analysis ──────────────────────────────────────────────
+def analyze_review_with_gemini(text: str, brand_hint: str = "jlr") -> dict:
+    """
+    Analyze an automotive review/social post using Gemini.
+    brand_hint: 'jlr' or 'tata' — provides context to the model.
+    """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key in ["MY_GEMINI_API_KEY", "YOUR_GEMINI_API_KEY"]:
-        return {
-            "sentiment": "Neutral",
-            "city": "Birmingham",
-            "isUpcoming": False,
-            "event": "Community Event",
-            "priority_score": 1,
-            "category_tag": "General",
-            "action_insight": "No recommendation."
-        }
-        
+        return _default_analysis(brand_hint, text)
+
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
-    
+
+    brand_context = (
+        "JLR (Jaguar Land Rover) brands: Jaguar (F-PACE, E-PACE, I-PACE and upcoming EVs), "
+        "Range Rover (Range Rover, Range Rover Sport, Velar, Evoque), "
+        "Defender (Defender 90, 110, 130, OCTA), Discovery (Discovery, Discovery Sport)."
+        if brand_hint == "jlr" else
+        "Tata Motors brands: Tiago, Tiago EV, Tigor, Tigor EV, Altroz, Punch, Punch EV, "
+        "Nexon, Nexon EV, Curvv, Curvv EV, Harrier, Harrier EV, Safari, Sierra, Sierra EV, XPRES (fleet EV)."
+    )
+
     prompt = f"""
-    Analyze the following social media post regarding Indian diaspora community events in the UK Midlands.
-    Extract the following information in strict JSON format:
-    1. "sentiment": must be one of "Positive", "Neutral", "Negative". 
-       - NOTE: Be strict when classifying content as "Negative" (only classify as Negative if there is explicit, significant complaint, logistical failure or safety issues).
-       - NOTE: Be lenient when classifying content as "Positive" (if it expresses general satisfaction, constructive optimism, community pride, or simple appreciation, classify it as Positive instead of Neutral).
-    2. "city": must be the UK Midlands city mentioned (e.g., "Birmingham", "Leicester", "Coventry", "Nottingham", "Wolverhampton"). If none is mentioned, default to "Birmingham".
-    3. "isUpcoming": boolean indicating if this refers to a future planned event or upcoming activity (rather than a past retrospective event).
-    4. "event": a concise, capitalized name for the event referenced (e.g. "Leicester Diwali Lights Switch-On 2026", "Midlands Holi Festival 2026", or "General Community Feedback 2026").
-    5. "priority_score": integer from 1 to 5 indicating the severity, urgency or importance of the issue/feedback raised (1 = minor/general chat, 5 = critical logistical failure, safety concern, or highly important feedback).
-    6. "category_tag": one main topic label from: "Transport", "Facilities", "Pricing", "Stalls & Food", "Safety & Crowd", "Culture & Music", "Ticketing", "India Passport", "India Visa", "Visa Appointment", "OCI Card", "General".
-    7. "action_insight": a single sentence with a constructive, actionable recommendation for organizers based on this post (e.g., "Provide park-and-ride shuttles to reduce traffic congestion", "Offer student ticket discounts to increase accessibility"). If general praise, suggest how to maintain the quality.
-    
-    Post Text:
+    Analyze the following social media post or review about an automotive brand ({brand_hint.upper()}).
+    Brand context: {brand_context}
+
+    Extract the following in strict JSON format:
+
+    1. "sentiment": Must be "Positive", "Neutral", or "Negative".
+       - "Negative" only if there is explicit complaint, reliability issue, safety concern, or significant dissatisfaction.
+       - "Positive" for praise, satisfaction, excitement, or community enthusiasm.
+       - "Neutral" for factual questions, news, or balanced observations.
+
+    2. "brand": Must be "jlr" or "tata" — which automotive group this review belongs to.
+
+    3. "brand_group": The sub-brand or segment:
+       - For JLR: "Jaguar", "Range Rover", "Defender", or "Discovery"
+       - For Tata: "SUV", "EV", "Hatchback", or "Sedan"
+       - If unclear, use the most likely based on model name.
+
+    4. "vehicle_model": The specific model name mentioned (e.g., "Defender 110", "Nexon EV", "Range Rover Sport").
+       If no specific model is mentioned, use the brand_group + " General" (e.g., "Defender General").
+
+    5. "isUpcoming": true if this is about a future/upcoming/launch vehicle or pre-release model,
+       false if it's about an existing production vehicle.
+
+    6. "category_tag": The single most relevant review theme from this list ONLY:
+       "Performance", "EV Range", "Comfort", "Infotainment", "Build Quality",
+       "After-Sales", "Pricing", "Safety", "Off-road", "Design", "General"
+
+    7. "priority_score": Integer 1–5 indicating urgency/importance:
+       1 = general comment or praise
+       2 = minor concern or question
+       3 = moderate complaint or issue
+       4 = significant defect, safety concern, or viral negative post
+       5 = critical safety recall, severe reliability failure, or PR risk
+
+    8. "action_insight": A single actionable sentence for the product or after-sales team
+       based on this review. If positive, suggest how to sustain or amplify.
+
+    Review Text:
     "{text}"
-    
-    Output JSON directly (no markdown blocks, no wrapping):
+
+    Output JSON directly (no markdown, no wrapping):
     """
-    
+
     try:
-        response = httpx.post(url, json={
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "responseMimeType": "application/json",
-                "temperature": 0.1
-            }
-        }, timeout=20.0)
-        
+        response = httpx.post(
+            url,
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1},
+            },
+            timeout=20.0,
+        )
         if response.status_code == 200:
             res_data = response.json()
             reply = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
-            
+
             import re
-            match = re.search(r'\{.*\}', reply, re.DOTALL)
+            match = re.search(r"\{.*\}", reply, re.DOTALL)
             if match:
                 reply = match.group(0)
-            
+
             reply = make_json_valid(reply)
             return json.loads(reply)
     except Exception as e:
-        print(f"Error parsing sentiment with Gemini: {e}. Raw reply: {reply if 'reply' in locals() else 'None'}")
-        
+        print(f"Error parsing review with Gemini: {e}. Raw reply: {reply if 'reply' in locals() else 'None'}")
+
+    return _default_analysis(brand_hint, text)
+
+
+def _default_analysis(brand_hint: str, text: str = "") -> dict:
+    """Fallback analysis when Gemini API is unavailable."""
     return {
         "sentiment": "Neutral",
-        "city": "Birmingham",
+        "brand": brand_hint,
+        "brand_group": "Range Rover" if brand_hint == "jlr" else "SUV",
+        "vehicle_model": "General",
         "isUpcoming": False,
-        "event": "Community Event",
         "priority_score": 1,
         "category_tag": "General",
-        "action_insight": "No recommendation."
+        "action_insight": "No recommendation.",
     }
 
-# Facebook pages/groups to scrape for Indian diaspora Midlands content
-FACEBOOK_PAGES = [
-    "AISfestival",            # An Indian Summer festival, Leicester
-    "ShivamEvents",           # Shivam Events, Leicester
-    "CentralStageCrew",       # Central Stage Crew (Midlands Indian events)
-    "SriBardai",              # Sri Bardai Brahmin Samaj Leicester
-    "ShreePrajapatiAssociationLeicester",  # SPAL Leicester
-]
 
-# Scraper method 4: Facebook page scraping (runs as subprocess to avoid asyncio conflicts)
-def run_facebook_scraper():
-    """Scrape Facebook pages using Playwright. Runs fb_scraper.py as a subprocess."""
-    c_user = os.getenv("FACEBOOK_C_USER", "")
-    xs = os.getenv("FACEBOOK_XS", "")
-    datr = os.getenv("FACEBOOK_DATR", "")
-
-    if not c_user or not xs or not datr or c_user == "your_c_user":
-        print("[WARNING] Facebook cookies not configured. Skipping Facebook scraping.")
-        print("  Set FACEBOOK_C_USER, FACEBOOK_XS, and FACEBOOK_DATR in .env")
-        return
-
-    import subprocess
-    fb_script = os.path.join(os.path.dirname(__file__), "fb_scraper.py")
-    print("\n--- Starting Facebook scraper (Playwright) ---")
-    result = subprocess.run([sys.executable, fb_script], cwd=os.path.dirname(__file__))
-    if result.returncode != 0:
-        print("[WARN] Facebook scraper exited with errors.")
-
-
-# Scraper method 5: Quora scraping (runs as subprocess to avoid asyncio conflicts)
-def run_quora_scraper():
-    """Scrape public Quora spaces and search results. Runs quora_scraper.py as a subprocess."""
-    import subprocess
-    quora_script = os.path.join(os.path.dirname(__file__), "quora_scraper.py")
-    print("\n--- Starting Quora scraper (Playwright) ---")
-    result = subprocess.run([sys.executable, quora_script], cwd=os.path.dirname(__file__))
-    if result.returncode != 0:
-        print("[WARN] Quora scraper exited with errors.")
-
-# Local SQLite upsert
-def upsert_feedback_local(item):
+# ─── SQLite upsert ───────────────────────────────────────────────────────────
+def upsert_feedback_local(item: dict):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
@@ -228,58 +264,64 @@ def upsert_feedback_local(item):
             action_insight TEXT
         )
     """)
-    # Safely alter table to add columns if they don't exist
-    for col, col_type in [("parent_id", "TEXT"), ("priority_score", "INTEGER"), ("category_tag", "TEXT"), ("action_insight", "TEXT")]:
+    # Add brand column if it doesn't exist (safe migration)
+    for col, col_type in [
+        ("parent_id", "TEXT"),
+        ("priority_score", "INTEGER"),
+        ("category_tag", "TEXT"),
+        ("action_insight", "TEXT"),
+        ("brand", "TEXT"),
+    ]:
         try:
             cursor.execute(f"ALTER TABLE feedback_items ADD COLUMN {col} {col_type}")
         except sqlite3.OperationalError:
             pass
-            
+
     cursor.execute("""
-        INSERT OR REPLACE INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id, priority_score, category_tag, action_insight)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO feedback_items
+            (id, platform, author, date, event, text, sentiment, city,
+             isUpcoming, parent_id, priority_score, category_tag, action_insight, brand)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         item["id"], item["platform"], item["author"], item["date"],
-        item["event"], item["text"], item["sentiment"], item["city"],
+        item["event"], item["text"], item["sentiment"],
+        item["city"],                          # brand_group stored here
         1 if item.get("isUpcoming") else 0,
         item.get("parent_id"),
         item.get("priority_score", 1),
         item.get("category_tag", "General"),
-        item.get("action_insight", "No recommendation.")
+        item.get("action_insight", "No recommendation."),
+        item.get("brand", "jlr"),
     ))
     conn.commit()
     conn.close()
 
-# Fast UK relevance gate — checks tweet text for at least one UK location/context keyword.
-# Runs before the Gemini API call to save quota on irrelevant international content.
-UK_KEYWORDS = [
-    "uk", "england", "britain", "british", "birmingham", "leicester", "coventry",
-    "wolverhampton", "nottingham", "derby", "west midlands", "east midlands",
-    "midlands", "manchester", "london", "bradford", "luton", "slough",
-    "nhs", "council", "mp ", "parliament", "whitehall", "home office",
-    "passport", "visa", "oci", "oci card", "consular"
-]
 
-def is_uk_relevant(text: str) -> bool:
-    text_lower = text.lower()
-    return any(kw in text_lower for kw in UK_KEYWORDS)
-
-# Scraper method 1: Official Twitter API v2 Bearer Token Ingestion
+# ─── Scraper 1: Official Twitter API v2 ─────────────────────────────────────
 async def run_official_api_scraper(bearer_token: str):
     headers = {"Authorization": f"Bearer {bearer_token}"}
-    UK_CITIES = '("Birmingham" OR "Leicester" OR "Coventry" OR "Wolverhampton" OR "Nottingham" OR "Derby" OR "West Midlands" OR "UK" OR "England" OR "Britain")'
-    mentions_query = " OR ".join([f"@{acc}" for acc in OFFICIAL_ACCOUNTS])
+
+    JLR_QUERY = (
+        '("Range Rover" OR "Defender" OR "Jaguar" OR "Discovery" OR "I-PACE" OR "Defender 110" OR "F-PACE") '
+        "lang:en -is:retweet"
+    )
+    TATA_QUERY = (
+        '("Nexon EV" OR "Tata Punch" OR "Curvv EV" OR "Tata Harrier" OR "Tata Safari" OR "Tiago EV" OR "Sierra EV") '
+        "lang:en -is:retweet"
+    )
+
     queries = {
-        "diaspora_community":   f'{UK_CITIES} ("British Indian" OR "British Asian" OR "South Asian" OR "Desi community") lang:en -is:retweet',
-        "cultural_events":      f'{UK_CITIES} ("Diwali" OR "Navratri" OR "Vaisakhi" OR "Holi" OR "Eid" OR "Mela") lang:en -is:retweet',
-        "consular_services":    f'{UK_CITIES} ("India passport" OR "India Visa" OR "Visa Appointment" OR "OCI Card" OR "OCI appointment" OR "consular") lang:en -is:retweet',
-        "account_mentions":     f'({mentions_query}) lang:en -is:retweet',
+        "jlr_reviews": (JLR_QUERY, "jlr"),
+        "tata_reviews": (TATA_QUERY, "tata"),
+        "brand_mentions": (
+            " OR ".join([f"@{acc}" for acc in ALL_BRAND_ACCOUNTS]) + " lang:en -is:retweet",
+            "auto"
+        ),
     }
-    
+
     total_added = 0
-    
     async with httpx.AsyncClient() as http_client:
-        for category, query_string in queries.items():
+        for category, (query_string, brand_hint) in queries.items():
             print(f"\n--- Fetching category: {category} (Official API) ---")
             url = "https://api.twitter.com/2/tweets/search/recent"
             params = {
@@ -287,7 +329,7 @@ async def run_official_api_scraper(bearer_token: str):
                 "tweet.fields": "created_at",
                 "expansions": "author_id",
                 "user.fields": "username,name",
-                "max_results": 10
+                "max_results": 10,
             }
             try:
                 response = await http_client.get(url, headers=headers, params=params, timeout=15.0)
@@ -295,166 +337,175 @@ async def run_official_api_scraper(bearer_token: str):
                     print("[ERROR] Official X API Rate Limited. Please wait.")
                     break
                 if response.status_code != 200:
-                    print(f"[ERROR] Official X API returned status {response.status_code}: {response.text}")
+                    print(f"[ERROR] Official X API returned {response.status_code}: {response.text}")
                     continue
-                    
+
                 resp_json = response.json()
                 tweets = resp_json.get("data", [])
                 users = {u["id"]: u for u in resp_json.get("includes", {}).get("users", [])}
-                
+
                 for tweet in tweets:
                     tweet_id = f"twitter_{tweet['id']}"
-                    
-                    # UK relevance gate: skip non-UK content unless mentioning UK-specific official accounts
                     author_id = tweet.get("author_id")
                     user_info = users.get(author_id, {})
-                    text_lower = tweet["text"].lower()
-                    is_uk = is_uk_relevant(tweet["text"]) or any(f"@{acc.lower()}" in text_lower for acc in ["hci_london", "cgi_bghm", "bhamcitycouncil", "leicester_news", "coventrycc", "hinducouncilbhm"])
-                    if not is_uk:
-                        print(f"[SKIP] Non-UK content filtered out from @{user_info.get('username', 'XUser')}")
+                    screen_name = user_info.get("username", "XUser")
+
+                    # Automotive relevance gate
+                    detected_brand = detect_brand(tweet["text"]) if brand_hint == "auto" else brand_hint
+                    if not is_automotive_relevant(tweet["text"]):
+                        print(f"[SKIP] Non-automotive content from @{screen_name}")
                         continue
 
-                    screen_name = user_info.get("username", "XUser")
-                    
-                    print(f"Found new tweet by: {user_info.get('name', 'User')} (@{screen_name})")
-                    
-                    # Perform Gemini analysis
-                    analysis = analyze_tweet_with_gemini(tweet["text"])
-                    
-                    # Date formatting
+                    print(f"Found tweet by: {user_info.get('name', 'User')} (@{screen_name})")
+                    analysis = analyze_review_with_gemini(tweet["text"], detected_brand)
+
                     try:
                         date_str = tweet["created_at"][:10]
-                    except:
+                    except Exception:
                         date_str = datetime.now().strftime("%Y-%m-%d")
-                    
-                    # Find which official account was tagged, to set parent_id
-                    tagged_account = None
-                    for account in OFFICIAL_ACCOUNTS:
-                        if f"@{account.lower()}" in text_lower:
-                            tagged_account = f"@{account}"
-                            break
-                        
+
                     new_item = {
                         "id": tweet_id,
                         "platform": "Twitter",
                         "author": f"@{screen_name}",
                         "date": date_str,
-                        "event": analysis.get("event", "General Community Feedback 2026"),
+                        "event": analysis.get("vehicle_model", "General"),
                         "text": tweet["text"],
                         "sentiment": analysis.get("sentiment", "Neutral"),
-                        "city": analysis.get("city", "Birmingham"),
+                        "city": analysis.get("brand_group", "General"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
-                        "parent_id": tagged_account,
+                        "parent_id": None,
                         "priority_score": int(analysis.get("priority_score", 1)),
                         "category_tag": analysis.get("category_tag", "General"),
-                        "action_insight": analysis.get("action_insight", "No recommendation.")
+                        "action_insight": analysis.get("action_insight", "No recommendation."),
+                        "brand": analysis.get("brand", detected_brand),
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1
                     print(f"[SUCCESS] Added tweet: {tweet['id']}")
             except Exception as e:
-                print(f"Error fetching category {category} with Official API: {e}")
-                
-            await asyncio.sleep(2)
-            
-    print(f"\nIngestion complete! Processed {total_added} items in local DB.")
+                print(f"Error fetching category {category}: {e}")
 
-# Scraper method 2: Twikit Browser Scraper (Fallback)
+            await asyncio.sleep(2)
+
+    print(f"\nOfficial API ingestion complete! Processed {total_added} items.")
+
+
+# ─── Scraper 2: Twikit Browser Scraper (Fallback) ───────────────────────────
 async def run_twikit_scraper():
     if not load_twitter_session():
         return
 
-    # UK-targeted queries: require explicit UK city/region mention + English language
-    UK_CITIES = '("Birmingham" OR "Leicester" OR "Coventry" OR "Wolverhampton" OR "Nottingham" OR "Derby" OR "West Midlands" OR "East Midlands" OR "UK" OR "England" OR "Britain")'
-    mentions_query = " OR ".join([f"@{acc}" for acc in OFFICIAL_ACCOUNTS])
     queries = {
-        "diaspora_community":   f'({UK_CITIES}) ("Indian diaspora" OR "South Asian" OR "Desi community" OR "British Indian" OR "British Asian") lang:en -is:retweet',
-        "cultural_events":      f'({UK_CITIES}) ("Diwali" OR "Navratri" OR "Vaisakhi" OR "Holi" OR "Eid" OR "Mela" OR "Garba") lang:en -is:retweet',
-        "local_issues":         f'({UK_CITIES}) ("Indian community" OR "Asian community" OR "South Asian") ("council" OR "MP" OR "police" OR "NHS" OR "mosque" OR "temple" OR "gurdwara") lang:en -is:retweet',
-        "diaspora_news":        f'({UK_CITIES}) ("British Indian" OR "British Pakistani" OR "British Bangladeshi" OR "British Sikh" OR "British Hindu" OR "British Muslim") lang:en -is:retweet',
-        "consular_services":    f'({UK_CITIES}) ("India passport" OR "India Visa" OR "Visa Appointment" OR "OCI Card" OR "OCI appointment" OR "consular") lang:en -is:retweet',
-        "account_mentions":     f'({mentions_query}) lang:en -is:retweet',
+        "jlr_reviews": (
+            '("Range Rover" OR "Land Rover Defender" OR "Jaguar I-PACE" OR "Discovery Sport") '
+            '("review" OR "owner" OR "reliability" OR "problem") lang:en -is:retweet',
+            "jlr",
+        ),
+        "jlr_ev": (
+            '("Jaguar EV" OR "I-PACE range" OR "JLR electric" OR "Range Rover PHEV") '
+            "lang:en -is:retweet",
+            "jlr",
+        ),
+        "tata_ev_reviews": (
+            '("Nexon EV" OR "Punch EV" OR "Curvv EV" OR "Tata EV") '
+            '("review" OR "range" OR "charging" OR "experience") lang:en -is:retweet',
+            "tata",
+        ),
+        "tata_launch": (
+            '("Harrier EV" OR "Sierra EV" OR "Tata Curvv" OR "Tata Safari") '
+            '("launch" OR "booking" OR "price" OR "delivery") lang:en -is:retweet',
+            "tata",
+        ),
+        "jlr_brand_mentions": (
+            " OR ".join([f"@{acc}" for acc in JLR_ACCOUNTS]) + " lang:en -is:retweet",
+            "jlr",
+        ),
+        "tata_brand_mentions": (
+            " OR ".join([f"@{acc}" for acc in TATA_ACCOUNTS]) + " lang:en -is:retweet",
+            "tata",
+        ),
     }
-    
+
     total_added = 0
-    
-    for category, query_string in queries.items():
-        print(f"\n--- Fetching category: {category} (Twikit Scraper) ---")
+    for category, (query_string, brand_hint) in queries.items():
+        print(f"\n--- Fetching category: {category} (Twikit) ---")
         try:
-            tweets = await client.search_tweet(query_string, product='Latest')
-            
+            tweets = await client.search_tweet(query_string, product="Latest")
             for tweet in tweets:
                 try:
                     tweet_id = f"twitter_{tweet.id}"
-                    
-                    # UK relevance gate: skip tweets with no UK connection unless mentioning UK-specific official accounts
                     text_lower = tweet.text.lower()
-                    is_uk = is_uk_relevant(tweet.text) or any(f"@{acc.lower()}" in text_lower for acc in ["hci_london", "cgi_bghm", "bhamcitycouncil", "leicester_news", "coventrycc", "hinducouncilbhm"])
-                    if not is_uk:
-                        safe_name = tweet.user.screen_name.encode('ascii','ignore').decode()
-                        print(f"[SKIP] Non-UK content filtered out from @{safe_name}")
+
+                    if not is_automotive_relevant(tweet.text):
+                        safe_name = tweet.user.screen_name.encode("ascii", "ignore").decode()
+                        print(f"[SKIP] Non-automotive content from @{safe_name}")
                         continue
-                        
-                    safe_name = tweet.user.name.encode('ascii','ignore').decode()
-                    safe_screen = tweet.user.screen_name.encode('ascii','ignore').decode()
-                    print(f"Found new tweet by: {safe_name} (@{safe_screen})")
-                    
-                    analysis = analyze_tweet_with_gemini(tweet.text)
-                    
+
+                    detected_brand = detect_brand(tweet.text) if brand_hint == "auto" else brand_hint
+                    safe_name = tweet.user.name.encode("ascii", "ignore").decode()
+                    safe_screen = tweet.user.screen_name.encode("ascii", "ignore").decode()
+                    print(f"Found tweet by: {safe_name} (@{safe_screen})")
+
+                    analysis = analyze_review_with_gemini(tweet.text, detected_brand)
+
                     try:
                         if isinstance(tweet.created_at, str):
                             dt = datetime.strptime(tweet.created_at, "%a %b %d %H:%M:%S %z %Y")
                             date_str = dt.strftime("%Y-%m-%d")
                         else:
                             date_str = tweet.created_at.strftime("%Y-%m-%d")
-                    except:
+                    except Exception:
                         date_str = datetime.now().strftime("%Y-%m-%d")
-                    
-                    # Find which official account was tagged, to set parent_id
+
+                    # Find which brand account was tagged
                     tagged_account = None
-                    for account in OFFICIAL_ACCOUNTS:
+                    for account in ALL_BRAND_ACCOUNTS:
                         if f"@{account.lower()}" in text_lower:
                             tagged_account = f"@{account}"
                             break
-                    
+
                     new_item = {
                         "id": tweet_id,
                         "platform": "Twitter",
                         "author": f"@{tweet.user.screen_name}",
                         "date": date_str,
-                        "event": analysis.get("event", "General Community Feedback 2026"),
+                        "event": analysis.get("vehicle_model", "General"),
                         "text": tweet.text,
                         "sentiment": analysis.get("sentiment", "Neutral"),
-                        "city": analysis.get("city", "Birmingham"),
+                        "city": analysis.get("brand_group", "General"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
                         "parent_id": tagged_account,
                         "priority_score": int(analysis.get("priority_score", 1)),
                         "category_tag": analysis.get("category_tag", "General"),
-                        "action_insight": analysis.get("action_insight", "No recommendation.")
+                        "action_insight": analysis.get("action_insight", "No recommendation."),
+                        "brand": analysis.get("brand", detected_brand),
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1
                     print(f"[SUCCESS] Added tweet: {tweet.id}")
-                    
-                except Exception as tweet_err:
-                    print(f"[WARN] Skipping tweet due to error: {str(tweet_err).encode('ascii','ignore').decode()}")
-                    continue
-            
-        except Exception as e:
-            print(f"Error searching category {category}: {str(e).encode('ascii','ignore').decode()}")
-            
-        await asyncio.sleep(5)
-        
-    print(f"\nIngestion complete! Processed {total_added} items in local DB.")
 
-# Scraper method 3: Fetch tweets from specific official accounts
+                except Exception as tweet_err:
+                    print(f"[WARN] Skipping tweet: {str(tweet_err).encode('ascii', 'ignore').decode()}")
+                    continue
+
+        except Exception as e:
+            print(f"Error searching category {category}: {str(e).encode('ascii', 'ignore').decode()}")
+
+        await asyncio.sleep(5)
+
+    print(f"\nTwikit ingestion complete! Processed {total_added} items.")
+
+
+# ─── Scraper 3: Official brand account tweets ────────────────────────────────
 async def run_account_scraper():
-    """Fetch recent tweets from official accounts like @MEAIndia, @HCI_London, @CGI_Bghm."""
+    """Fetch recent tweets from official JLR and Tata brand accounts."""
     if not load_twitter_session():
         return
 
     total_added = 0
-    for account in OFFICIAL_ACCOUNTS:
+    for account in ALL_BRAND_ACCOUNTS:
+        brand_hint = "tata" if account in TATA_ACCOUNTS else "jlr"
         print(f"\n--- Fetching tweets from @{account} ---")
         try:
             user = await client.get_user_by_screen_name(account)
@@ -462,28 +513,18 @@ async def run_account_scraper():
                 print(f"[WARN] Could not find user @{account}")
                 continue
 
-            tweets = await client.get_user_tweets(user.id, tweet_type='Tweets')
+            tweets = await client.get_user_tweets(user.id, tweet_type="Tweets")
             if not tweets:
                 print(f"[INFO] No recent tweets found for @{account}")
                 continue
 
-            # Twikit returns a ResultList — iterate safely
             tweet_list = list(tweets) if tweets else []
             print(f"[INFO] Found {len(tweet_list)} tweets for @{account}")
 
             for tweet in tweet_list:
                 try:
                     tweet_id = f"twitter_{tweet.id}"
-
-                    # Relaxed UK filter for official accounts — they post about India-UK matters
-                    # but may not always mention UK keywords explicitly
-                    if not is_uk_relevant(tweet.text):
-                        # Still include if the account is always UK-relevant
-                        if account not in ("HCI_London", "CGI_Bghm"):
-                            print(f"[SKIP] Non-UK content from @{account}")
-                            continue
-
-                    analysis = analyze_tweet_with_gemini(tweet.text)
+                    analysis = analyze_review_with_gemini(tweet.text, brand_hint)
 
                     try:
                         if isinstance(tweet.created_at, str):
@@ -491,7 +532,7 @@ async def run_account_scraper():
                             date_str = dt.strftime("%Y-%m-%d")
                         else:
                             date_str = tweet.created_at.strftime("%Y-%m-%d")
-                    except:
+                    except Exception:
                         date_str = datetime.now().strftime("%Y-%m-%d")
 
                     new_item = {
@@ -499,40 +540,69 @@ async def run_account_scraper():
                         "platform": "Twitter",
                         "author": f"@{account}",
                         "date": date_str,
-                        "event": analysis.get("event", "General Community Feedback 2026"),
+                        "event": analysis.get("vehicle_model", "General"),
                         "text": tweet.text,
                         "sentiment": analysis.get("sentiment", "Neutral"),
-                        "city": analysis.get("city", "London"),
+                        "city": analysis.get("brand_group", "General"),
                         "isUpcoming": bool(analysis.get("isUpcoming")),
                         "parent_id": None,
                         "priority_score": int(analysis.get("priority_score", 1)),
                         "category_tag": analysis.get("category_tag", "General"),
-                        "action_insight": analysis.get("action_insight", "No recommendation.")
+                        "action_insight": analysis.get("action_insight", "No recommendation."),
+                        "brand": brand_hint,
                     }
                     upsert_feedback_local(new_item)
                     total_added += 1
                     print(f"[SUCCESS] Added tweet from @{account}: {tweet.id}")
                 except Exception as tweet_err:
-                    print(f"[WARN] Skipping tweet: {str(tweet_err).encode('ascii','ignore').decode()}")
+                    print(f"[WARN] Skipping tweet: {str(tweet_err).encode('ascii', 'ignore').decode()}")
                     continue
         except Exception as e:
             import traceback
-            print(f"Error fetching @{account}: {str(e).encode('ascii','ignore').decode()}")
+            print(f"Error fetching @{account}: {str(e).encode('ascii', 'ignore').decode()}")
             traceback.print_exc()
         await asyncio.sleep(3)
 
     print(f"\nOfficial account ingestion complete! Processed {total_added} items.")
 
-# Deduplicate the local SQLite database in-place
+
+# ─── Scraper 4: Reddit public JSON ──────────────────────────────────────────
+def run_reddit_scraper():
+    """Scrape public Reddit subreddits for JLR and Tata reviews via public JSON API.
+    No authentication required. Runs in-process (no asyncio conflicts)."""
+    import subprocess
+    reddit_script = os.path.join(os.path.dirname(__file__), "reddit_scraper.py")
+    if not os.path.exists(reddit_script):
+        print("[WARN] reddit_scraper.py not found. Skipping Reddit scraping.")
+        return
+    print("\n--- Starting Reddit scraper ---")
+    result = subprocess.run([sys.executable, reddit_script], cwd=os.path.dirname(__file__))
+    if result.returncode != 0:
+        print("[WARN] Reddit scraper exited with errors.")
+
+
+# ─── Scraper 5: Automotive portal (AutoExpress/CarDekho via Playwright) ──────
+def run_autoportal_scraper():
+    """Scrape automotive review portals. Runs autoportal_scraper.py as subprocess."""
+    import subprocess
+    portal_script = os.path.join(os.path.dirname(__file__), "autoportal_scraper.py")
+    if not os.path.exists(portal_script):
+        print("[WARN] autoportal_scraper.py not found. Skipping portal scraping.")
+        return
+    print("\n--- Starting Automotive Portal scraper (Playwright) ---")
+    result = subprocess.run([sys.executable, portal_script], cwd=os.path.dirname(__file__))
+    if result.returncode != 0:
+        print("[WARN] Autoportal scraper exited with errors.")
+
+
+# ─── DB deduplication ────────────────────────────────────────────────────────
 def deduplicate_db():
     import re as _re
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    try:
-        cursor.execute("ALTER TABLE feedback_items ADD COLUMN parent_id TEXT")
-    except sqlite3.OperationalError:
-        pass
-    cursor.execute("SELECT id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id FROM feedback_items")
+    cursor.execute(
+        "SELECT id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id FROM feedback_items"
+    )
     rows = cursor.fetchall()
 
     def get_tokens(text):
@@ -549,7 +619,7 @@ def deduplicate_db():
     def score(item):
         return (
             (4 if item[8] else 0)
-            + (2 if item[4] not in ("Community Event", "General Community Feedback 2026") else 0)
+            + (2 if item[4] not in ("General", "General Review") else 0)
             + (1 if item[6] != "Neutral" else 0)
         )
 
@@ -578,7 +648,7 @@ def deduplicate_db():
         for row in unique:
             cursor.execute(
                 "INSERT INTO feedback_items (id, platform, author, date, event, text, sentiment, city, isUpcoming, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                row
+                row,
             )
         conn.commit()
         print(f"\nDeduplicated DB: {before} -> {after} items (removed {before - after} duplicates)")
@@ -587,6 +657,8 @@ def deduplicate_db():
 
     conn.close()
 
+
+# ─── Main orchestrator ───────────────────────────────────────────────────────
 async def run_scraper():
     bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
     if bearer_token and bearer_token != "your_bearer_token":
@@ -594,21 +666,21 @@ async def run_scraper():
     else:
         await run_twikit_scraper()
 
-    # Also fetch from official accounts (@MEAIndia, @HCI_London, @CGI_Bghm)
+    # Fetch from official brand accounts
     await run_account_scraper()
 
-    # Fetch from Facebook pages (run in thread to avoid asyncio conflict with Playwright)
+    # Reddit public scraping (no auth needed)
     import threading
-    fb_thread = threading.Thread(target=run_facebook_scraper)
-    fb_thread.start()
-    fb_thread.join()
+    reddit_thread = threading.Thread(target=run_reddit_scraper)
+    reddit_thread.start()
+    reddit_thread.join()
 
-    # Fetch from Quora (public spaces & search results, no login needed)
-    quora_thread = threading.Thread(target=run_quora_scraper)
-    quora_thread.start()
-    quora_thread.join()
+    # Automotive portals (AutoExpress, CarDekho via Playwright)
+    portal_thread = threading.Thread(target=run_autoportal_scraper)
+    portal_thread.start()
+    portal_thread.join()
 
-    # Deduplicate the local DB
+    # Deduplicate DB
     deduplicate_db()
 
     # Auto-export to data.json
@@ -616,6 +688,7 @@ async def run_scraper():
     import subprocess
     export_script = os.path.join(os.path.dirname(__file__), "export_data.py")
     subprocess.run([sys.executable, export_script], cwd=os.path.dirname(__file__))
+
 
 if __name__ == "__main__":
     asyncio.run(run_scraper())
