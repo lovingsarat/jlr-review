@@ -700,6 +700,19 @@ def deduplicate_db():
     conn.close()
 
 
+def run_slack_scraper():
+    """Scrape Slack message history. Runs slack_scraper.py as subprocess."""
+    import subprocess
+    slack_script = os.path.join(os.path.dirname(__file__), "slack_scraper.py")
+    if not os.path.exists(slack_script):
+        print("[WARN] slack_scraper.py not found. Skipping Slack scraping.")
+        return
+    print("\n--- Starting Slack History scraper ---")
+    result = subprocess.run([sys.executable, slack_script], cwd=os.path.dirname(__file__))
+    if result.returncode != 0:
+        print("[WARN] Slack scraper exited with errors.")
+
+
 # ─── Main orchestrator ───────────────────────────────────────────────────────
 async def run_scraper():
     bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
@@ -721,6 +734,11 @@ async def run_scraper():
     portal_thread = threading.Thread(target=run_autoportal_scraper)
     portal_thread.start()
     portal_thread.join()
+
+    # Slack channel history ingestion
+    slack_thread = threading.Thread(target=run_slack_scraper)
+    slack_thread.start()
+    slack_thread.join()
 
     # Deduplicate DB
     deduplicate_db()
