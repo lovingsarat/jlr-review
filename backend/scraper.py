@@ -243,6 +243,44 @@ def _default_analysis(brand_hint: str, text: str = "") -> dict:
     }
 
 
+# ─── Slack Notification for Critical Issues ───────────────────────────────
+def send_slack_alert(item: dict):
+    webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+    if not webhook_url or webhook_url == "your_slack_webhook_url":
+        return
+
+    brand_name = "JLR (Jaguar Land Rover)" if item.get("brand") == "jlr" else "Tata Motors"
+    emoji = "🚨" if item.get("priority_score", 1) == 5 else "⚠️"
+    
+    payload = {
+        "text": f"{emoji} *CRITICAL FEEDBACK DETECTED — {brand_name.upper()}*",
+        "attachments": [
+            {
+                "color": "#ef4444" if item.get("priority_score", 1) == 5 else "#f59e0b",
+                "fields": [
+                    {"title": "Vehicle Model", "value": item.get("event", "General"), "short": True},
+                    {"title": "Platform", "value": item.get("platform", "Unknown"), "short": True},
+                    {"title": "Author", "value": item.get("author", "Anonymous"), "short": True},
+                    {"title": "Theme", "value": item.get("category_tag", "General"), "short": True},
+                    {"title": "Priority Score", "value": "★" * item.get("priority_score", 1), "short": True},
+                    {"title": "Actionable Insight", "value": item.get("action_insight", "None"), "short": False}
+                ],
+                "text": f"*{item.get('author')}:* {item.get('text')}"
+            }
+        ]
+    }
+    
+    try:
+        # Use simple httpx request to send webhook
+        resp = httpx.post(webhook_url, json=payload, timeout=5.0)
+        if resp.status_code == 200:
+            print(f"[Slack] Successfully sent alert for priority {item.get('priority_score')}")
+        else:
+            print(f"[Slack] Failed to send alert: {resp.status_code} - {resp.text}")
+    except Exception as e:
+        print(f"[Slack] Error sending webhook: {e}")
+
+
 # ─── SQLite upsert ───────────────────────────────────────────────────────────
 def upsert_feedback_local(item: dict):
     conn = sqlite3.connect(DB_PATH)
@@ -295,6 +333,10 @@ def upsert_feedback_local(item: dict):
     ))
     conn.commit()
     conn.close()
+
+    # Trigger Slack alert for Priority 5 critical issues
+    if int(item.get("priority_score", 1)) == 5:
+        send_slack_alert(item)
 
 
 # ─── Scraper 1: Official Twitter API v2 ─────────────────────────────────────

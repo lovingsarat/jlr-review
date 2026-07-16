@@ -312,17 +312,43 @@ function App() {
     setActiveTab("dashboard");
   };
 
-  // AI Chat
+  // Dynamic follow-up suggestion chips state
+  const [activeFollowUps, setActiveFollowUps] = useState([]);
+
+  // AI Chat — Enhanced RAG context builder (weighted TF-IDF approach)
   const buildChatContext = (query, items, limit = 8) => {
-    const queryWords = new Set((query.toLowerCase().match(/[a-z0-9]+/g) || []));
+    const cleanQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+    const queryWords = cleanQuery.split(/\s+/).filter(w => w.length > 2);
+    
+    // Stop words to ignore when matching
+    const stops = new Set(["the", "and", "for", "with", "this", "that", "about", "car", "vehicle", "model"]);
+    const queryKeywords = queryWords.filter(w => !stops.has(w));
+    
     const scored = items.map((item) => {
-      const haystack = `${item.text} ${item.event} ${item.author} ${item.city} ${item.platform}`.toLowerCase();
+      const textLower = item.text.toLowerCase();
+      const eventLower = item.event.toLowerCase();
+      const categoryLower = item.category_tag.toLowerCase();
       let score = 0;
-      queryWords.forEach((word) => { if (haystack.includes(word)) score++; });
+      
+      queryKeywords.forEach((word) => {
+        // Model match gets very high weight
+        if (eventLower.includes(word)) score += 5;
+        // Category/theme match gets high weight
+        if (categoryLower.includes(word)) score += 3;
+        // Text keyword occurrences
+        const regex = new RegExp(`\\b${word}\\b`, "g");
+        const count = (textLower.match(regex) || []).length;
+        score += count;
+      });
       return { item, score };
     });
-    scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, limit).map((s) => s.item);
+
+    // Filter out items with 0 score if there are enough matches, else fallback to standard
+    const positiveScored = scored.filter(s => s.score > 0);
+    const targetList = positiveScored.length > 0 ? positiveScored : scored;
+    
+    targetList.sort((a, b) => b.score - a.score);
+    return targetList.slice(0, limit).map((s) => s.item);
   };
 
   const buildAnalyticsContext = (analyticsObj) => {
@@ -354,32 +380,85 @@ function App() {
     setIsChatLoading(true);
     setChatError(null);
 
+    // Cache lookup key
+    const cacheKey = `jlr-tata-chat-cache-${activeBrand}-${trimmed.toLowerCase()}`;
+    const cachedResponse = sessionStorage.getItem(cacheKey);
+
+    if (cachedResponse) {
+      try {
+        const parsed = JSON.parse(cachedResponse);
+        setChatMessages((prev) => [...prev, { sender: "BOT", text: parsed.answer, timestamp: Date.now() }]);
+        setActiveFollowUps(parsed.followUps || []);
+        setIsChatLoading(false);
+        return;
+      } catch (e) {
+        sessionStorage.removeItem(cacheKey);
+      }
+    }
+
     const source = allItems.length ? allItems : STATIC_FEEDBACK_ITEMS;
     const brandItems = source.filter((i) => i.brand === activeBrand);
-    const contextItems = buildChatContext(trimmed, brandItems, 8);
+    const contextItems = buildChatContext(trimmed, brandItems, 10);
     const contextText = contextItems.map((item) =>
-      `- ${item.sentiment} (${item.platform}, ${item.event}, ${item.date}): ${item.text}`
+      `- [Sentiment: ${item.sentiment}] Model: ${item.event} | Tag: #${item.category_tag} | Review: ${item.text}`
     ).join("\n");
 
     const brandLabel = activeBrand === "jlr" ? "JLR (Jaguar Land Rover)" : "Tata Motors";
     const activeAnalytics = activeBrand === "jlr" ? jlrAnalytics : tataAnalytics;
     const analyticsContext = buildAnalyticsContext(activeAnalytics || analytics);
 
-    const prompt = `You are a ${brandLabel} Vehicle Intelligence Assistant. You analyze customer reviews, owner feedback, and expert opinions for ${brandLabel} vehicles.\n\nUse the ANALYTICS SUMMARY for aggregated insights. Use the REVIEW CONTEXT for specific quotes and details. If asked for a number of items (e.g., top 5), list exactly that many. Be concise and specific.\n\nANALYTICS SUMMARY:\n${analyticsContext}\n\nREVIEW CONTEXT:\n${contextText}\n\nUser question: ${trimmed}\n\nAnswer concisely.`;
+    const prompt = `You are a ${brandLabel} Vehicle Intelligence Assistant. You analyze customer reviews, owner feedback, and expert opinions for ${brandLabel} vehicles.
+
+Your output must be a valid JSON object matching this structure exactly (do not output any markdown wrappers or extra characters):
+{
+  "answer": "Your detailed, concise response to the user's question, citing models and percentages when appropriate.",
+  "followUps": [
+    "A short follow-up question the user might want to ask next",
+    "Another follow-up question",
+    "A third follow-up question"
+  ]
+}
+
+Make sure the followUps questions are highly relevant, specific, and based on the answer you provided.
+
+ANALYTICS SUMMARY:
+${analyticsContext}
+
+REVIEW CONTEXT:
+${contextText}
+
+User question: ${trimmed}`;
 
     try {
       const res = await fetch(GEMINI_API_URL(geminiApiKey), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] }),
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2
+          }
+        }),
       });
       if (!res.ok) throw new Error("Gemini API request failed.");
       const data = await res.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I didn't get a response from Gemini.";
-      setChatMessages((prev) => [...prev, { sender: "BOT", text: reply, timestamp: Date.now() }]);
-    } catch {
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+      
+      const parsed = JSON.parse(rawText);
+      const botAnswer = parsed.answer || "No response generated.";
+      const followUps = parsed.followUps || [];
+
+      // Save to cache
+      sessionStorage.setItem(cacheKey, JSON.stringify({ answer: botAnswer, followUps }));
+
+      setChatMessages((prev) => [...prev, { sender: "BOT", text: botAnswer, timestamp: Date.now() }]);
+      setActiveFollowUps(followUps);
+    } catch (e) {
+      console.error(e);
       setChatError("Gemini API call failed. Check your API key and try again.");
       setChatMessages((prev) => [...prev, { sender: "BOT", text: "❌ Error: Gemini API call failed. Please check your API key.", timestamp: Date.now() }]);
+      setActiveFollowUps([]);
     } finally {
       setIsChatLoading(false);
     }
@@ -828,11 +907,19 @@ function App() {
             </div>
 
             <div className="quick-suggestions-section">
-              <span className="suggestions-title">⚡ QUICK ANALYTICS</span>
+              <span className="suggestions-title">
+                {activeFollowUps.length > 0 ? "💬 SUGGESTED FOLLOW-UPS" : "⚡ QUICK ANALYTICS"}
+              </span>
               <div className="suggestions-chips-container">
-                {cfg.suggestedQuestions.map((q, idx) => (
-                  <button key={idx} className="suggestion-chip" onClick={() => handleSendChat(q)}>{q}</button>
-                ))}
+                {activeFollowUps.length > 0 ? (
+                  activeFollowUps.map((q, idx) => (
+                    <button key={idx} className="suggestion-chip follow-up-chip" onClick={() => handleSendChat(q)}>{q}</button>
+                  ))
+                ) : (
+                  cfg.suggestedQuestions.map((q, idx) => (
+                    <button key={idx} className="suggestion-chip" onClick={() => handleSendChat(q)}>{q}</button>
+                  ))
+                )}
               </div>
             </div>
 

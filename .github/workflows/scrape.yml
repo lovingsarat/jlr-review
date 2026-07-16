@@ -1,0 +1,54 @@
+name: Scheduled Automotive Review Scraper
+
+on:
+  schedule:
+    # Run daily at 01:00 UTC
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+    # Enable manual triggering from GitHub actions UI
+
+jobs:
+  run-scraper-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run Scraper & Data Export
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TWITTER_AUTH_TOKEN: ${{ secrets.TWITTER_AUTH_TOKEN }}
+          TWITTER_CT0: ${{ secrets.TWITTER_CT0 }}
+          REDDIT_USER_AGENT: "JLRTataReviewBot/1.0 (by u/AutoReviewBot)"
+        run: |
+          cd backend
+          # Run the main orchestrator script
+          python scraper.py
+
+      - name: Commit & Push Updated data.json
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if data.json or the database changed
+          git add frontend/public/data.json backend/diaspora.db
+          
+          if git diff --staged --quiet; then
+            echo "No data changes to commit."
+          else
+            git commit -m "chore: auto-update customer review data [skip ci]"
+            git push origin main
+          fi
