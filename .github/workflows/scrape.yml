@@ -1,9 +1,6 @@
 name: Scheduled Automotive Review Scraper
 
 on:
-  schedule:
-    # Run daily at 01:00 UTC
-    - cron: '0 1 * * *'
   workflow_dispatch:
     # Enable manual triggering from GitHub actions UI
 
